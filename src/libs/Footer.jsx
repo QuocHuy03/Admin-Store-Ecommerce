@@ -9,7 +9,7 @@ export default function Footer() {
       <ul className="flex items-center text-black/40 dark:text-white/40 text-xs">
         <li>
           <a
-            href="javascript:;"
+            href="#"
             className="px-2 py-1 hover:text-black dark:hover:text-white transition-all duration-300"
           >
             About
@@ -17,7 +17,7 @@ export default function Footer() {
         </li>
         <li>
           <a
-            href="javascript:;"
+            href="#"
             className="px-2 py-1 hover:text-black dark:hover:text-white transition-all duration-300"
           >
             Support
@@ -25,7 +25,7 @@ export default function Footer() {
         </li>
         <li>
           <a
-            href="javascript:;"
+            href="#"
             className="px-2 py-1 hover:text-black dark:hover:text-white transition-all duration-300"
           >
             Contact Us
