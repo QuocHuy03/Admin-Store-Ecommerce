@@ -22,9 +22,11 @@ export default function List() {
   const [dataIdToDelete, setDataIdToDelete] = useState(null);
   const [categoryName, setCategoryName] = useState("");
 
+  const [searchTerm, setSearchTerm] = useState("");
+
   const [paginate, setPaginate] = useState({
-    page: paginateEnv.page || 1,
-    limit: paginateEnv.limit || 1,
+    page: paginateEnv.page,
+    limit: paginateEnv.limit,
   });
 
   const showModal = (id, item) => {
@@ -55,11 +57,13 @@ export default function List() {
     },
   });
 
-  const { data, isLoading, refetch } = useQuery({
+  const { data, isLoading, refetch, setData } = useQuery({
     queryKey: ["categories", , paginate.page, paginate.limit],
     queryFn: () => fetchAllCategoriesPage(paginate.page, paginate.limit),
     staleTime: 1000,
   });
+
+  // panigate
 
   const handlePageChange = (pageNumber) => {
     setPaginate((prevPaginate) => ({
@@ -71,6 +75,52 @@ export default function List() {
   useEffect(() => {
     refetch();
   }, [paginate.page, paginate.limit, refetch]);
+
+  // filter table
+
+  // const handleSearch = (event) => {
+  //   const searchTerm = event.target.value;
+  //   console.log(searchTerm);
+  //   setSearchTerm(searchTerm);
+
+  //   // Lọc dữ liệu dựa vào giá trị search
+  //   const filteredDataHuy = Array.isArray(data.data)
+  //     ? data.data.filter((item) =>
+  //         item.nameCategory.toLowerCase().includes(searchTerm.toLowerCase())
+  //       )
+  //     : [];
+
+  //   data.data = filteredDataHuy;
+  //   setFilteredData(filteredData);
+  // };
+
+  // useEffect(() => {
+  //   if (searchTerm) {
+  //     data.data = filteredData;
+  //   }
+  // }, [searchTerm]);
+
+  const handleSearch = (event) => {
+    const searchTerm = event.target.value;
+    setSearchTerm(searchTerm);
+  };
+
+  useEffect(() => {
+    if (searchTerm) {
+      // Lọc dữ liệu dựa vào giá trị search
+      const filteredDataHuy = Array.isArray(data?.data)
+        ? data.data.filter((item) =>
+            item.nameCategory.toLowerCase().includes(searchTerm.toLowerCase())
+          )
+        : [];
+
+      data.data = filteredDataHuy;
+    } else {
+      queryClient.invalidateQueries("categories");
+    }
+  }, [searchTerm, data?.data]);
+
+  // modal
 
   const queryClient = useQueryClient();
 
@@ -159,6 +209,8 @@ export default function List() {
               id="table-search"
               className="block p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="Search for items"
+              value={searchTerm}
+              onChange={handleSearch}
             />
           </div>
           <button
