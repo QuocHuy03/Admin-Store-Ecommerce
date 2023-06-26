@@ -292,6 +292,19 @@ export default function List() {
           open={isModalDelete}
           onOk={handleOk}
           onCancel={handleCancel}
+          footer={[
+            <Button key="cancel" onClick={handleCancel}>
+              Cancel
+            </Button>,
+            <Button
+              key="ok"
+              type="primary"
+              style={{ background: "red" }}
+              onClick={handleOk}
+            >
+              OK
+            </Button>,
+          ]}
         >
           Are you sure you want to delete the category "{categoryName}" ?
         </Modal>
