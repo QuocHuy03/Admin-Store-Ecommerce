@@ -1,12 +1,20 @@
-import React from "react";
+import React, { useContext } from "react";
 import Layout from "../../libs/Layout";
-import { Link } from "react-router-dom";
+import { AppContext } from "../../context/AppContextProvider";
+import Modal from "../../components/Modal";
 
 export default function List() {
+  const { isOpenModal, setIsOpenModal } = useContext(AppContext
+    );
+  const openModal = () => {
+    setIsOpenModal(true);
+  };
+  const closeModal = () => {
+    setIsOpenModal(false);
+  };
   return (
     <Layout>
-
-      <div className="relative overflow-x-auto ">
+      <div className="relative overflow-x-auto">
         <div className="flex items-center justify-between pb-4">
           <label htmlFor="table-search" className="sr-only">
             Search
@@ -34,14 +42,17 @@ export default function List() {
               placeholder="Search for items"
             />
           </div>
-          <Link
-          to="add"
-          className=" text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-        >
-          Add Category
-        </Link>
-
+          <button
+            onClick={openModal}
+            className=" text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+          >
+            Add Category
+          </button>
         </div>
+
+        <Modal nameModal={"Add Category"} isOpenModal={isOpenModal} onClose={closeModal}>
+          1
+        </Modal>
 
         <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
