@@ -301,7 +301,7 @@ export default function List() {
               </th>
               <th scope="col" className="px-6 py-3">
                 <div className="flex items-center justify-center">
-                  Slug
+                  Outstanding
                   <a href="#">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -352,7 +352,10 @@ export default function List() {
           {isLoading ? (
             <tbody>
               <tr className="text-center">
-                <td colSpan="5" style={{ verticalAlign: "middle",paddingTop: 20 }}>
+                <td
+                  colSpan="5"
+                  style={{ verticalAlign: "middle", paddingTop: 20 }}
+                >
                   <Loading />
                 </td>
               </tr>
@@ -370,9 +373,33 @@ export default function List() {
                   >
                     {index}
                   </th>
-                  <td className="px-6 py-4">{item.id}</td>
-                  <td className="px-6 py-4">{item.id}</td>
-                  <td className="px-6 py-4">{item.id}</td>
+                  <td className="px-6 py-4">{item.nameCategory}</td>
+                  <td className="px-6 py-4">
+                    <p
+                      className={`${
+                        item.outstandingCategory === "outstanding"
+                          ? "px-2 py-1 inline-flex items-center rounded text-xs font-bold justify-center bg-green-500 text-white"
+                          : "px-2 py-1 inline-flex items-center rounded text-xs font-bold justify-center bg-red-500 text-white"
+                      }`}
+                    >
+                      {item.outstandingCategory === "outstanding"
+                        ? "Nổi Bật"
+                        : "Không Nổi Bật"}
+                    </p>
+                  </td>
+                  <td className="px-6 py-4">
+                    <p
+                      className={`${
+                        item.statusCategory === "stocking"
+                          ? "px-2 py-1 inline-flex items-center rounded text-xs font-bold justify-center bg-green-500 text-white"
+                          : "px-2 py-1 inline-flex items-center rounded text-xs font-bold justify-center bg-red-500 text-white"
+                      }`}
+                    >
+                      {item.statusCategory === "stocking"
+                        ? "Còn Hàng"
+                        : "Hết Hàng"}
+                    </p>
+                  </td>
                   <td className="px-6 py-4">
                     <a
                       href="#"
