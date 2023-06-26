@@ -171,7 +171,7 @@ export default function List() {
                 ) : null
               }
             >
-              OK
+              Add
             </Button>,
           ]}
         >
