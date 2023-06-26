@@ -1,9 +1,10 @@
 import axios from "axios";
+import { httpApi } from "../dev";
 
 class Http {
   constructor() {
     this.huydev = axios.create({
-      baseURL: "http://localhost:8080/api",
+      baseURL: `${httpApi}/api`,
       timeout: 10000,
       headers: {
         "Content-Type": "application/json",

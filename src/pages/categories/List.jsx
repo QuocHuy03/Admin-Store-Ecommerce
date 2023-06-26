@@ -6,6 +6,9 @@ import Modal from "../../components/Modal";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { fetchPostCategory } from "../../utils/api/categoriesApi";
+import { fetchPostUpload } from "../../utils/api/uploadApi";
+import { httpApi } from "../../dev";
 
 export default function List() {
   const { isOpenModal, setIsOpenModal } = useContext(AppContext);
@@ -26,27 +29,48 @@ export default function List() {
     formState: { errors },
     reset,
   } = useForm();
-  const postJobMutation = useMutation((data) => postJob(data));
+
+  const postJobMutation = useMutation((data) => fetchPostCategory(data));
+
   const onSubmit = async (data) => {
     setIsSubmitting(true);
+
     try {
-      const response = await postApplyMutation.mutateAsync(data);
-      // if (response.status === true) {
-      //   Swal.fire({
-      //     title: "Success!",
-      //     text: `${response.message}`,
-      //     icon: "success",
-      //     confirmButtonText: "OK",
-      //   });
-      // } else {
-      //   Swal.fire({
-      //     title: "Error!",
-      //     text: `${response.message}`,
-      //     icon: "error",
-      //     confirmButtonText: "OK",
-      //   });
-      // }
-      // reset();
+      const formData = new FormData();
+      formData.append("file", data.imageCategory[0]);
+
+      const uploadResponse = await axios.post(
+        `${httpApi}/api/uploadFile`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      const imageUrl = uploadResponse.data.secure_url;
+
+      // Tiếp tục xử lý dữ liệu và gửi yêu cầu POST đến server
+      data.imageCategory = imageUrl;
+
+      const response = await postJobMutation.mutateAsync(data);
+      if (response.status === true) {
+        Swal.fire({
+          title: "Success!",
+          text: `${response.message}`,
+          icon: "success",
+          confirmButtonText: "OK",
+        });
+      } else {
+        Swal.fire({
+          title: "Error!",
+          text: `${response.message}`,
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      }
+      reset();
       // closeModal();
     } catch (error) {
       console.error(error);
