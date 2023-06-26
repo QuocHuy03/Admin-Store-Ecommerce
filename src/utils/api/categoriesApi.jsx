@@ -11,6 +11,17 @@ export const fetchAllCategories = async () => {
   }
 };
 
+export const fetchAllCategoriesPage = async (page, limit) => {
+  try {
+    const response = await http.get(
+      `/getAllCategories?page=${page}&limit=${limit}`
+    );
+    return response;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 export const fetchCategoryBySlug = async (slug) => {
   try {
     const response = await http.get(`/getCategoryBySlug/${slug}`);

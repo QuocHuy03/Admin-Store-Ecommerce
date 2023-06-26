@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import Layout from "../../libs/Layout";
 import { AppContext } from "../../context/AppContextProvider";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -8,18 +8,24 @@ import { Button, Modal } from "antd";
 import { message } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import {
-  fetchAllCategories,
+  fetchAllCategoriesPage,
   fetchDeleteCategory,
   fetchPostCategory,
 } from "../../utils/api/categoriesApi";
 import Loading from "../../components/Loading";
 import { Link } from "react-router-dom";
+import { paginateEnv } from "../../dev";
 
 export default function List() {
   const { isOpenModal, setIsOpenModal } = useContext(AppContext);
   const [isModalDelete, setIsModalDelete] = useState(false);
   const [dataIdToDelete, setDataIdToDelete] = useState(null);
   const [categoryName, setCategoryName] = useState("");
+
+  const [paginate, setPaginate] = useState({
+    page: paginateEnv.page || 1,
+    limit: paginateEnv.limit || 1,
+  });
 
   const showModal = (id, item) => {
     setDataIdToDelete(id);
@@ -49,11 +55,23 @@ export default function List() {
     },
   });
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["categories"],
-    queryFn: () => fetchAllCategories(),
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: ["categories", , paginate.page, paginate.limit],
+    queryFn: () => fetchAllCategoriesPage(paginate.page, paginate.limit),
     staleTime: 1000,
   });
+
+  const handlePageChange = (pageNumber) => {
+    setPaginate((prevPaginate) => ({
+      ...prevPaginate,
+      page: pageNumber,
+    }));
+  };
+
+  useEffect(() => {
+    refetch();
+  }, [paginate.page, paginate.limit, refetch]);
+
   const queryClient = useQueryClient();
 
   const [isSubmitting, setIsSubmitting] = useState(false); // set loading button
@@ -365,7 +383,7 @@ export default function List() {
             </tbody>
           ) : (
             <tbody>
-              {data.map((item, index) => (
+              {data.data.map((item, index) => (
                 <tr
                   className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 text-center"
                   key={item.id}
@@ -427,11 +445,17 @@ export default function List() {
         <nav className="pt-4 text-center">
           <ul className="inline-flex items-center -space-x-px">
             <li>
+              {/* Previous page button */}
               <a
-                href="#"
-                className="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                className={`block px-3 py-2 ml-0 leading-tight ${
+                  data?.currentPage === 1
+                    ? "text-gray-300 cursor-not-allowed"
+                    : "text-gray-500 hover:text-gray-700"
+                } bg-white border border-gray-300 rounded-l-lg`}
+                onClick={() => handlePageChange(data?.currentPage - 1)}
               >
                 <span className="sr-only">Previous</span>
+                {/* Previous page icon */}
                 <svg
                   aria-hidden="true"
                   className="w-5 h-5"
@@ -447,53 +471,37 @@ export default function List() {
                 </svg>
               </a>
             </li>
+            {/* Page numbers */}
+            {Array.from({ length: data?.totalPages }, (_, index) => (
+              <li key={index}>
+                <a
+                  className={`${
+                    data?.currentPage === index + 1
+                      ? "z-10 px-3 py-2 leading-tight text-blue-600 border border-blue-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
+                      : "px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                  }`}
+                  onClick={() => handlePageChange(index + 1)}
+                >
+                  {index + 1}
+                </a>
+              </li>
+            ))}
             <li>
+              {/* Next page button */}
               <a
-                href="#"
-                className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-              >
-                1
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-              >
-                2
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                aria-current="page"
-                className="z-10 px-3 py-2 leading-tight text-blue-600 border border-blue-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
-              >
-                3
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-              >
-                4
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-              >
-                5
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="block px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                className={`block px-3 py-2 leading-tight ${
+                  data?.currentPage === data?.totalPages
+                    ? "text-gray-300 cursor-not-allowed"
+                    : "text-gray-500 hover:text-gray-700"
+                } bg-white border border-gray-300 rounded-r-lg`}
+                onClick={() => {
+                  if (data?.currentPage !== data?.totalPages) {
+                    handlePageChange(data?.currentPage + 1);
+                  }
+                }}
               >
                 <span className="sr-only">Next</span>
+                {/* Next page icon */}
                 <svg
                   aria-hidden="true"
                   className="w-5 h-5"
