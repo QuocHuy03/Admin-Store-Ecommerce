@@ -1,16 +1,27 @@
 import React, { useContext, useState } from "react";
 import Layout from "../../libs/Layout";
 import { AppContext } from "../../context/AppContextProvider";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import Modal from "../../components/Modal";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { message } from "antd";
-import { fetchPostCategory } from "../../utils/api/categoriesApi";
+import {
+  fetchAllCategories,
+  fetchPostCategory,
+} from "../../utils/api/categoriesApi";
 import { httpApi } from "../../dev";
+import Loading from "../../components/Loading";
 
 export default function List() {
   const { isOpenModal, setIsOpenModal } = useContext(AppContext);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["categories"],
+    queryFn: () => fetchAllCategories(),
+    staleTime: 1000,
+  });
+
   const [isSubmitting, setIsSubmitting] = useState(false); // set loading button
 
   const openModal = () => {
@@ -338,27 +349,42 @@ export default function List() {
               </th>
             </tr>
           </thead>
-          <tbody>
-            <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 text-center">
-              <th
-                scope="row"
-                className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-              >
-                1
-              </th>
-              <td className="px-6 py-4">Silver</td>
-              <td className="px-6 py-4">Laptop</td>
-              <td className="px-6 py-4">$2999</td>
-              <td className="px-6 py-4">
-                <a
-                  href="#"
-                  className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+          {isLoading ? (
+            <tbody>
+              <tr className="text-center">
+                <td colSpan="5" style={{ verticalAlign: "middle",paddingTop: 20 }}>
+                  <Loading />
+                </td>
+              </tr>
+            </tbody>
+          ) : (
+            <tbody>
+              {data.map((item, index) => (
+                <tr
+                  className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 text-center"
+                  key={item.id}
                 >
-                  Edit
-                </a>
-              </td>
-            </tr>
-          </tbody>
+                  <th
+                    scope="row"
+                    className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                  >
+                    {index}
+                  </th>
+                  <td className="px-6 py-4">{item.id}</td>
+                  <td className="px-6 py-4">{item.id}</td>
+                  <td className="px-6 py-4">{item.id}</td>
+                  <td className="px-6 py-4">
+                    <a
+                      href="#"
+                      className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                    >
+                      Edit
+                    </a>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          )}
         </table>
 
         <nav className="pt-4 text-center">
