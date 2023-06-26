@@ -8,7 +8,12 @@ export function AppContextProvider({ children }) {
 
   return (
     <AppContext.Provider
-      value={{ isOpen, setIsOpen, isOpenModal, setIsOpenModal }}
+      value={{
+        isOpen,
+        setIsOpen,
+        isOpenModal,
+        setIsOpenModal,
+      }}
     >
       {children}
     </AppContext.Provider>

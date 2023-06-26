@@ -40,7 +40,7 @@ export const fetchUpdateCategory = async (slug, data) => {
 
 export const fetchDeleteCategory = async (id) => {
   try {
-    const response = await http.post(`/deleteCategory/${id}`);
+    const response = await http.delete(`/deleteCategory/${id}`);
     return response;
   } catch (error) {
     console.error(error);

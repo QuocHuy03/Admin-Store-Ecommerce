@@ -1,22 +1,53 @@
-import React, { useContext, useState } from "react";
+import React, { useState, useContext } from "react";
 import Layout from "../../libs/Layout";
 import { AppContext } from "../../context/AppContextProvider";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import Modal from "../../components/Modal";
+import ModalForm from "../../components/Modal";
 import { useForm } from "react-hook-form";
-import axios from "axios";
+import { Button, Modal } from "antd";
 import { message } from "antd";
 import {
   fetchAllCategories,
+  fetchDeleteCategory,
   fetchPostCategory,
-  fetchUpdateCategory,
 } from "../../utils/api/categoriesApi";
-import { httpApi } from "../../dev";
 import Loading from "../../components/Loading";
 import { Link } from "react-router-dom";
 
 export default function List() {
   const { isOpenModal, setIsOpenModal } = useContext(AppContext);
+  const [isModalDelete, setIsModalDelete] = useState(false);
+  const [dataIdToDelete, setDataIdToDelete] = useState(null);
+  const [categoryName, setCategoryName] = useState("");
+
+  const showModal = (id, item) => {
+    setDataIdToDelete(id);
+    setCategoryName(item.nameCategory);
+    setIsModalDelete(true);
+  };
+  const handleOk = () => {
+    deleteCategoryMutation.mutateAsync(dataIdToDelete);
+    setIsModalDelete(false);
+  };
+  const handleCancel = () => {
+    setIsModalDelete(false);
+  };
+
+  const deleteCategoryMutation = useMutation((id) => fetchDeleteCategory(id), {
+    onSuccess: (response) => {
+      if (response.status === true) {
+        message.success(`${response.message}`);
+      } else {
+        message.error(`${response.message}`);
+      }
+      queryClient.invalidateQueries(["categories"]);
+    },
+    onError: (error) => {
+      console.error(error);
+      message.error(`${error}`);
+    },
+  });
+
   const { data, isLoading } = useQuery({
     queryKey: ["categories"],
     queryFn: () => fetchAllCategories(),
@@ -119,7 +150,7 @@ export default function List() {
           </button>
         </div>
 
-        <Modal
+        <ModalForm
           title={"Add Category"}
           isOpenModal={isOpenModal}
           onClose={closeModal}
@@ -254,6 +285,15 @@ export default function List() {
               </button>
             </div>
           </form>
+        </ModalForm>
+
+        <Modal
+          title="Delete Category"
+          open={isModalDelete}
+          onOk={handleOk}
+          onCancel={handleCancel}
+        >
+          Are you sure you want to delete the category "{categoryName}" ?
         </Modal>
 
         <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -388,7 +428,7 @@ export default function List() {
                     </Link>
                     {" / "}
                     <button
-                      href="#"
+                      onClick={() => showModal(item.id, item)}
                       className="font-medium text-red-600 dark:text-blue-500 hover:underline"
                     >
                       Delete
