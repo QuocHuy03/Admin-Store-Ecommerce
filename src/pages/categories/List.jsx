@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import Layout from "../../libs/Layout";
 import { AppContext } from "../../context/AppContextProvider";
+import { useMutation } from "@tanstack/react-query";
 import Modal from "../../components/Modal";
 import { useForm } from "react-hook-form";
 import axios from "axios";
@@ -8,6 +9,7 @@ import Swal from "sweetalert2";
 
 export default function List() {
   const { isOpenModal, setIsOpenModal } = useContext(AppContext);
+  const [isSubmitting, setIsSubmitting] = useState(false); // set loading button
 
   const openModal = () => {
     setIsOpenModal(true);
@@ -24,30 +26,28 @@ export default function List() {
     formState: { errors },
     reset,
   } = useForm();
-
-  const [isSubmitting, setIsSubmitting] = useState(false); // set loading button
-
+  const postJobMutation = useMutation((data) => postJob(data));
   const onSubmit = async (data) => {
     setIsSubmitting(true);
     try {
       const response = await postApplyMutation.mutateAsync(data);
-      if (response.status === true) {
-        Swal.fire({
-          title: "Success!",
-          text: `${response.message}`,
-          icon: "success",
-          confirmButtonText: "OK",
-        });
-      } else {
-        Swal.fire({
-          title: "Error!",
-          text: `${response.message}`,
-          icon: "error",
-          confirmButtonText: "OK",
-        });
-      }
-      reset();
-      closeModal();
+      // if (response.status === true) {
+      //   Swal.fire({
+      //     title: "Success!",
+      //     text: `${response.message}`,
+      //     icon: "success",
+      //     confirmButtonText: "OK",
+      //   });
+      // } else {
+      //   Swal.fire({
+      //     title: "Error!",
+      //     text: `${response.message}`,
+      //     icon: "error",
+      //     confirmButtonText: "OK",
+      //   });
+      // }
+      // reset();
+      // closeModal();
     } catch (error) {
       console.error(error);
     }
@@ -152,25 +152,27 @@ export default function List() {
 
                 <div>
                   <label
-                    htmlFor="level"
+                    htmlFor="statusCategory"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
                     Status
                   </label>
 
                   <select
-                    id="level"
+                    id="statusCategory"
                     className={`${
-                      errors.level ? "border-red-500" : "border-gray-300"
+                      errors.statusCategory
+                        ? "border-red-500"
+                        : "border-gray-300"
                     } bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
-                    {...register("level", { required: true })}
+                    {...register("statusCategory", { required: true })}
                     defaultValue="" // Update defaultValue attribute
                   >
                     <option value="">Vui Lòng Chọn Trạng Thái </option>
                     <option value="stocking">Còn Hàng</option>
                     <option value="out-of-stock">Hết Hàng</option>
                   </select>
-                  {errors.level && (
+                  {errors.statusCategory && (
                     <p className="text-red-500 text-sm mt-1">
                       * Status is required
                     </p>
@@ -213,7 +215,7 @@ export default function List() {
                 <button
                   disabled
                   type="button"
-                  className=" clbfd cl2i6 co6sl cursor-not-allowed "
+                  className="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600 cursor-not-allowed "
                 >
                   <svg
                     aria-hidden="true"
@@ -232,12 +234,12 @@ export default function List() {
                       fill="currentColor"
                     />
                   </svg>
-                  Add
+                  Loading
                 </button>
               ) : (
                 <button
                   type="submit"
-                  className="co6sl text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
+                  className=" text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
                 >
                   Add
                 </button>
@@ -245,7 +247,7 @@ export default function List() {
               <button
                 type="button"
                 onClick={closeModal}
-                className=" co6sl text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
+                className=" text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
               >
                 Close
               </button>
