@@ -5,10 +5,6 @@ export default function ModalForm({ title, isOpenModal, footer, onClose, childre
   if (!isOpenModal) {
     return null;
   }
-  const handleOk = () => {
-
-  }
-
   const hideModal = () => {
     onClose(false);
   };
@@ -66,6 +62,7 @@ export default function ModalForm({ title, isOpenModal, footer, onClose, childre
       onOk={hideModal}
       onCancel={hideModal}
       footer={footer}
+      width={700}
   
     >
       {children}

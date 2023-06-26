@@ -36,7 +36,6 @@ export default function Edit() {
     register,
     handleSubmit,
     formState: { errors },
-    reset,
   } = useForm();
 
   const updateCategoryMutation = useMutation((data) =>
@@ -54,7 +53,6 @@ export default function Edit() {
       } else {
         message.error(`${response.message}`);
       }
-      reset();
       queryClient.invalidateQueries("edit-category");
     } catch (error) {
       console.error(error);
