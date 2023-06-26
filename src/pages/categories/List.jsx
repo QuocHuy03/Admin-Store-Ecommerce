@@ -9,13 +9,14 @@ import { message } from "antd";
 import {
   fetchAllCategories,
   fetchPostCategory,
+  fetchUpdateCategory,
 } from "../../utils/api/categoriesApi";
 import { httpApi } from "../../dev";
 import Loading from "../../components/Loading";
+import { Link } from "react-router-dom";
 
 export default function List() {
   const { isOpenModal, setIsOpenModal } = useContext(AppContext);
-
   const { data, isLoading } = useQuery({
     queryKey: ["categories"],
     queryFn: () => fetchAllCategories(),
@@ -62,12 +63,14 @@ export default function List() {
       const imageUrl = uploadResponse.data.secure_url;
       data.imageCategory = imageUrl;
 
+      // Add mode
       const response = await postJobMutation.mutateAsync(data);
       if (response.status === true) {
         message.success(`${response.message}`);
       } else {
         message.error(`${response.message}`);
       }
+
       reset();
       closeModal();
     } catch (error) {
@@ -115,7 +118,7 @@ export default function List() {
         </div>
 
         <Modal
-          nameModal={"Add Category"}
+          title={"Add Category"}
           isOpenModal={isOpenModal}
           onClose={closeModal}
         >
@@ -371,7 +374,7 @@ export default function List() {
                     scope="row"
                     className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                   >
-                    {index}
+                    {index + 1}
                   </th>
                   <td className="px-6 py-4">{item.nameCategory}</td>
                   <td className="px-6 py-4">
@@ -401,12 +404,19 @@ export default function List() {
                     </p>
                   </td>
                   <td className="px-6 py-4">
-                    <a
-                      href="#"
+                    <Link
+                      to={`edit/${item.slugCategory}`}
                       className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                     >
                       Edit
-                    </a>
+                    </Link>
+                    {" / "}
+                    <button
+                      href="#"
+                      className="font-medium text-red-600 dark:text-blue-500 hover:underline"
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))}

@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function Modal({ nameModal, isOpenModal, onClose, children }) {
+export default function Modal({ title, isOpenModal, onClose, children }) {
   const handleMouseDown = (event) => {
     if (event.target === event.currentTarget) {
       onClose();
@@ -29,7 +29,7 @@ export default function Modal({ nameModal, isOpenModal, onClose, children }) {
           {/* Modal header */}
           <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-              {nameModal}
+              {title}
             </h3>
             <button
               type="button"
