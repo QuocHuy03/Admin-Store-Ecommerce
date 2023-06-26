@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import Layout from "../../libs/Layout";
 import { AppContext } from "../../context/AppContextProvider";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Modal from "../../components/Modal";
 import { useForm } from "react-hook-form";
 import axios from "axios";
@@ -22,6 +22,7 @@ export default function List() {
     queryFn: () => fetchAllCategories(),
     staleTime: 1000,
   });
+  const queryClient = useQueryClient();
 
   const [isSubmitting, setIsSubmitting] = useState(false); // set loading button
 
@@ -41,30 +42,30 @@ export default function List() {
     reset,
   } = useForm();
 
-  const postJobMutation = useMutation((data) => fetchPostCategory(data));
+  const postCategoryMutation = useMutation((data) => fetchPostCategory(data));
 
   const onSubmit = async (data) => {
     setIsSubmitting(true);
 
     try {
-      const formData = new FormData();
-      formData.append("file", data.imageCategory[0]);
+      // const formData = new FormData();
+      // formData.append("file", data.imageCategory[0]);
 
-      const uploadResponse = await axios.post(
-        `${httpApi}/api/uploadFile`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      // const uploadResponse = await axios.post(
+      //   `${httpApi}/api/uploadFile`,
+      //   formData,
+      //   {
+      //     headers: {
+      //       "Content-Type": "multipart/form-data",
+      //     },
+      //   }
+      // );
 
-      const imageUrl = uploadResponse.data.secure_url;
-      data.imageCategory = imageUrl;
+      // const imageUrl = uploadResponse.data.secure_url;
+      // data.imageCategory = imageUrl;
 
       // Add mode
-      const response = await postJobMutation.mutateAsync(data);
+      const response = await postCategoryMutation.mutateAsync(data);
       if (response.status === true) {
         message.success(`${response.message}`);
       } else {
@@ -73,6 +74,7 @@ export default function List() {
 
       reset();
       closeModal();
+      queryClient.invalidateQueries("categories");
     } catch (error) {
       console.error(error);
     }
@@ -145,32 +147,6 @@ export default function List() {
                   {errors.nameCategory && (
                     <p className="text-red-500 text-sm mt-1">
                       * Name category is required
-                    </p>
-                  )}
-                </div>
-
-                <div>
-                  <label
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                    htmlFor="imageCategory"
-                  >
-                    Image Category File (.png, .jpg) ...
-                  </label>
-                  <input
-                    className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 ${
-                      errors.imageCategory
-                        ? "border-red-500"
-                        : "border-gray-300"
-                    }
-                      cp76h cuw4o`}
-                    id="imageCategory"
-                    accept=".png,.jpg"
-                    type="file"
-                    {...register("imageCategory", { required: true })}
-                  />
-                  {errors.imageCategory && (
-                    <p className="text-red-500 text-sm mt-1">
-                      * Image Category is required
                     </p>
                   )}
                 </div>

@@ -31,7 +31,7 @@ export const fetchPostCategory = async (data) => {
 
 export const fetchUpdateCategory = async (slug, data) => {
   try {
-    const response = await http.post(`/updateCategory/${slug}`, data);
+    const response = await http.update(`/updateCategory/${slug}`, data);
     return response;
   } catch (error) {
     console.error(error);
