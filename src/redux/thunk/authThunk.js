@@ -9,8 +9,8 @@ export const loginThunk = createAsyncThunk(
     try {
       const response = await postLogin(data);
       if (response.status === true) {
-        const user = await verifyToken(response.accessToken);
-        dispatch(loginSuccess(user));
+        // const user = await verifyToken(response.accessToken);
+        dispatch(loginSuccess(response));
         return response;
       } else {
         dispatch(loginError(response));

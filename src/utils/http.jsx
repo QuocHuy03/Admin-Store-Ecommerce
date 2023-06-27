@@ -10,6 +10,20 @@ class Http {
         "Content-Type": "application/json",
       },
     });
+    this.accessToken = null;
+  }
+
+  setAccessToken(accessToken) {
+    this.accessToken = accessToken;
+    this.createHeader(accessToken);
+  }
+
+  createHeader(token) {
+    if (token) {
+      this.huydev.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    } else {
+      delete this.huydev.defaults.headers.common["Authorization"];
+    }
   }
 
   async get(url, params) {

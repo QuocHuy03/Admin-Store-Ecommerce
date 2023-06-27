@@ -57,7 +57,7 @@ export default function List() {
     },
   });
 
-  const { data, isLoading, refetch, setData } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ["categories", , paginate.page, paginate.limit],
     queryFn: () => fetchAllCategoriesPage(paginate.page, paginate.limit),
     staleTime: 1000,

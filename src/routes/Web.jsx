@@ -7,15 +7,15 @@ import ListProduct from "../pages/products/List";
 import EditCategory from "../pages/categories/Edit";
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import store from "../redux/store";
-import { loginSuccess } from "../redux/authSlide/authSilde";
 
 export default function Web() {
   const navigate = useNavigate();
   // const dispatch = useDispatch();
   const { isLoggedIn } = useSelector((state) => state.auth);
   // const persistedState = store.getState();
+  // console.log(persistedState)
 
   useEffect(() => {
     if (!isLoggedIn) navigate("/auth");
