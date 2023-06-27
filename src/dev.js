@@ -3,3 +3,5 @@ export const paginateEnv = {
   page: 1,
   limit: 5,
 };
+
+export const SECRET_KEY = "LeQuocHuy"
