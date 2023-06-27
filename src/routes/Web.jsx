@@ -4,16 +4,28 @@ import Home from "../pages/Home";
 import NotFound from "../pages/NotFound";
 import ListCategory from "../pages/categories/List";
 import ListProduct from "../pages/products/List";
-import EditCategory from "../pages/categories/Edit"
+import EditCategory from "../pages/categories/Edit";
+import Login from "../pages/auth/Login";
+import Register from "../pages/auth/Register";
 
 export default function Web() {
+  const status = true;
   return (
-    <Routes>
-      <Route path="/" exact element={<Home />} />
-      <Route path="/categories" element={<ListCategory />} />
-      <Route path="/categories/edit/:slug" element={<EditCategory />} />
-      <Route path="/products" element={<ListProduct />} />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <div>
+      {status ? (
+        <Routes>
+          <Route path="/auth" element={<Login />} exact />
+          <Route path="/auth/register" element={<Register />} exact />
+        </Routes>
+      ) : (
+        <Routes>
+          <Route path="/" exact element={<Home />} />
+          <Route path="/categories" element={<ListCategory />} />
+          <Route path="/categories/edit/:slug" element={<EditCategory />} />
+          <Route path="/products" element={<ListProduct />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      )}
+    </div>
   );
 }

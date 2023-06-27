@@ -78,28 +78,6 @@ export default function List() {
 
   // filter table
 
-  // const handleSearch = (event) => {
-  //   const searchTerm = event.target.value;
-  //   console.log(searchTerm);
-  //   setSearchTerm(searchTerm);
-
-  //   // Lọc dữ liệu dựa vào giá trị search
-  //   const filteredDataHuy = Array.isArray(data.data)
-  //     ? data.data.filter((item) =>
-  //         item.nameCategory.toLowerCase().includes(searchTerm.toLowerCase())
-  //       )
-  //     : [];
-
-  //   data.data = filteredDataHuy;
-  //   setFilteredData(filteredData);
-  // };
-
-  // useEffect(() => {
-  //   if (searchTerm) {
-  //     data.data = filteredData;
-  //   }
-  // }, [searchTerm]);
-
   const handleSearch = (event) => {
     const searchTerm = event.target.value;
     setSearchTerm(searchTerm);
