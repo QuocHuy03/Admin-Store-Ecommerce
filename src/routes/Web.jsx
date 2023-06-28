@@ -8,12 +8,12 @@ import EditCategory from "../pages/categories/Edit";
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 import { useSelector } from "react-redux";
-import store from "../redux/store";
 
 export default function Web() {
   const navigate = useNavigate();
   // const dispatch = useDispatch();
   const { isLoggedIn } = useSelector((state) => state.auth);
+  
   // const persistedState = store.getState();
   // console.log(persistedState)
 
