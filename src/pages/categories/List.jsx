@@ -60,7 +60,6 @@ export default function List() {
     () => fetchAllCategoriesPage(paginate.page, paginate.limit),
     {
       staleTime: 1000,
-      enabled: false, // Disable automatic fetching on component mount
     }
   );
 
