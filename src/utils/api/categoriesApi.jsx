@@ -81,3 +81,28 @@ export const fetchDeleteCategory = async (id) => {
     console.error(error);
   }
 };
+
+export const fetchDeleteCategoriesAll = async (id) => {
+  try {
+    const state = store.getState();
+    const accessToken = state.auth.user.accessToken;
+    http.setAccessToken(accessToken);
+    const response = await http.delete(`/deleteCategoriesAll`);
+    return response;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+
+export const fetchDeleteCategoriesByIds = async (id) => {
+  try {
+    const state = store.getState();
+    const accessToken = state.auth.user.accessToken;
+    http.setAccessToken(accessToken);
+    const response = await http.delete(`/deleteCategoriesByIds`);
+    return response;
+  } catch (error) {
+    console.error(error);
+  }
+};

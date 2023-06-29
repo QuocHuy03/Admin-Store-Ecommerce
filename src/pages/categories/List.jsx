@@ -9,6 +9,7 @@ import { message } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import {
   fetchAllCategories,
+  fetchDeleteCategoriesByIds,
   fetchDeleteCategory,
   fetchPostCategory,
   fetchUpdateCategory,
@@ -19,6 +20,8 @@ import DataTable from "react-data-table-component";
 
 export default function List() {
   const { isOpenModal, setIsOpenModal } = useContext(AppContext);
+  const queryClient = useQueryClient();
+  const [isSubmitting, setIsSubmitting] = useState(false); // set loading button
   const [isModalDelete, setIsModalDelete] = useState(false);
   const [dataIdToDelete, setDataIdToDelete] = useState(null);
   const [searchText, setSearchText] = useState("");
@@ -98,6 +101,7 @@ export default function List() {
     },
   ];
 
+  
   const showModal = (id, item) => {
     setDataIdToDelete(id);
     setCategoryName(item.nameCategory);
@@ -126,6 +130,14 @@ export default function List() {
     },
   });
 
+  const [selectedRows, setSelectedRows] = useState([]);
+
+  const handleRowSelected = (rows) => {
+    const selectedIds = rows.selectedRows.map((row) => row.id);
+    setSelectedRows(selectedIds);
+  };
+  console.log(selectedRows)
+
   const { data, isLoading } = useQuery(
     ["categories"],
     () => fetchAllCategories(),
@@ -143,10 +155,6 @@ export default function List() {
     : data;
 
   // modal
-
-  const queryClient = useQueryClient();
-
-  const [isSubmitting, setIsSubmitting] = useState(false); // set loading button
 
   const openModal = () => {
     setIsEditing(false);
@@ -226,19 +234,37 @@ export default function List() {
 
   return (
     <Layout>
-      <div>
-        <input
-          type="text"
-          placeholder="Search..."
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-        />
-      </div>
       <div className="relative overflow-x-auto">
-        <div className="text-right pb-4">
+        <div className="flex justify-between">
+          <div className="flex">
+            <div class="relative">
+              <input
+                type="text"
+                id="voice-search"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-3 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholder="Search Data ..."
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                required
+              />
+            </div>
+
+            <button
+              
+              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 ml-2"
+            >
+              Delete Selected
+            </button>
+            <button
+            
+              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 ml-2"
+            >
+              Delete All
+            </button>
+          </div>
           <button
             onClick={openModal}
-            className=" text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 ml-2"
           >
             Add Category
           </button>
@@ -384,6 +410,7 @@ export default function List() {
           responsive={true}
           pagination
           selectableRows
+          onSelectedRowsChange={handleRowSelected}
         />
       </div>
     </Layout>
