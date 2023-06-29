@@ -8,24 +8,91 @@ import { Button, Modal } from "antd";
 import { message } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import {
-  fetchAllCategoriesPage,
+  fetchAllCategories,
   fetchDeleteCategory,
   fetchPostCategory,
 } from "../../utils/api/categoriesApi";
 import Loading from "../../components/Loading";
 import { Link } from "react-router-dom";
-import { paginateEnv } from "../../dev";
+import DataTable from "react-data-table-component";
 
 export default function List() {
   const { isOpenModal, setIsOpenModal } = useContext(AppContext);
   const [isModalDelete, setIsModalDelete] = useState(false);
   const [dataIdToDelete, setDataIdToDelete] = useState(null);
+  const [searchText, setSearchText] = useState("");
   const [categoryName, setCategoryName] = useState("");
 
-  const [paginate, setPaginate] = useState({
-    page: paginateEnv.page,
-    limit: paginateEnv.limit,
-  });
+  const huydev = [
+    {
+      name: "STT",
+      selector: (row, index) => index + 1,
+      sortable: true,
+    },
+    {
+      name: "NAME CATEGORY",
+      selector: (row) => row.nameCategory,
+      sortable: true,
+    },
+    {
+      name: "OUTSTANDING",
+      selector: (row) => row.outstandingCategory,
+      sortable: true,
+      cell: (row) => (
+        <div
+          className={`${
+            row.outstandingCategory === "outstanding"
+              ? "px-2 py-1 inline-flex items-center rounded text-xs font-bold justify-center bg-green-500 text-white"
+              : "px-2 py-1 inline-flex items-center rounded text-xs font-bold justify-center bg-red-500 text-white"
+          }`}
+        >
+          {row.outstandingCategory === "outstanding"
+            ? "Nổi Bật"
+            : "Không Nổi Bật"}
+        </div>
+      ),
+    },
+    {
+      name: "STATUS",
+      selector: (row) => row.statusCategory,
+      sortable: true,
+      cell: (row) => (
+        <div
+          className={`${
+            row.statusCategory === "stocking"
+              ? "px-2 py-1 inline-flex items-center rounded text-xs font-bold justify-center bg-green-500 text-white"
+              : "px-2 py-1 inline-flex items-center rounded text-xs font-bold justify-center bg-red-500 text-white"
+          }`}
+        >
+          {row.statusCategory === "stocking" ? "Còn Hàng" : "Hết Hàng"}
+        </div>
+      ),
+    },
+
+    {
+      name: "Actions",
+      cell: (row) => (
+        <div>
+          <Link
+            to={`edit/${row.slugCategory}`}
+            className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+          >
+            Edit
+          </Link>{" "}
+          /{" "}
+          <button
+            onClick={() => showModal(row.id, row)}
+            className="font-medium text-red-600 dark:text-blue-500 hover:underline"
+          >
+            Delete
+          </button>
+        </div>
+      ),
+      ignoreRowClick: true,
+      allowOverflow: true,
+      button: true,
+    },
+  ];
 
   const showModal = (id, item) => {
     setDataIdToDelete(id);
@@ -55,28 +122,23 @@ export default function List() {
     },
   });
 
-  const { data, isLoading, refetch } = useQuery(
-    ["categories", paginate.page, paginate.limit],
-    () => fetchAllCategoriesPage(paginate.page, paginate.limit),
+  const { data, isLoading } = useQuery(
+    ["categories"],
+    () => fetchAllCategories(),
     {
       staleTime: 1000,
     }
   );
 
-  // panigate
+  // search
 
-  const handlePageChange = (pageNumber) => {
-    setPaginate((prevPaginate) => ({
-      ...prevPaginate,
-      page: pageNumber,
-    }));
-  };
+  const filteredData = searchText
+    ? data.filter((huyit) =>
+        huyit.nameCategory.toLowerCase().includes(searchText.toLowerCase())
+      )
+    : data;
 
-  useEffect(() => {
-    refetch();
-    // return () => {
-    // };
-  }, [paginate.page, paginate.limit, refetch]);
+
   // modal
 
   const queryClient = useQueryClient();
@@ -140,6 +202,14 @@ export default function List() {
 
   return (
     <Layout>
+      <div>
+        <input
+          type="text"
+          placeholder="Search..."
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+        />
+      </div>
       <div className="relative overflow-x-auto">
         <div className="text-right pb-4">
           <button
@@ -279,227 +349,14 @@ export default function List() {
           Are you sure you want to delete the category "{categoryName}" ?
         </Modal>
 
-        <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-            <tr className="text-center">
-              <th scope="col" className="px-6 py-3">
-                STT
-              </th>
-              <th scope="col" className="px-6 py-3">
-                <div className="flex items-center justify-center">
-                  Name
-                  <a href="#">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="w-3 h-3 ml-1"
-                      aria-hidden="true"
-                      fill="currentColor"
-                      viewBox="0 0 320 512"
-                    >
-                      <path d="M27.66 224h264.7c24.6 0 36.89-29.78 19.54-47.12l-132.3-136.8c-5.406-5.406-12.47-8.107-19.53-8.107c-7.055 0-14.09 2.701-19.45 8.107L8.119 176.9C-9.229 194.2 3.055 224 27.66 224zM292.3 288H27.66c-24.6 0-36.89 29.77-19.54 47.12l132.5 136.8C145.9 477.3 152.1 480 160 480c7.053 0 14.12-2.703 19.53-8.109l132.3-136.8C329.2 317.8 316.9 288 292.3 288z" />
-                    </svg>
-                  </a>
-                </div>
-              </th>
-              <th scope="col" className="px-6 py-3">
-                <div className="flex items-center justify-center">
-                  Outstanding
-                  <a href="#">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="w-3 h-3 ml-1"
-                      aria-hidden="true"
-                      fill="currentColor"
-                      viewBox="0 0 320 512"
-                    >
-                      <path d="M27.66 224h264.7c24.6 0 36.89-29.78 19.54-47.12l-132.3-136.8c-5.406-5.406-12.47-8.107-19.53-8.107c-7.055 0-14.09 2.701-19.45 8.107L8.119 176.9C-9.229 194.2 3.055 224 27.66 224zM292.3 288H27.66c-24.6 0-36.89 29.77-19.54 47.12l132.5 136.8C145.9 477.3 152.1 480 160 480c7.053 0 14.12-2.703 19.53-8.109l132.3-136.8C329.2 317.8 316.9 288 292.3 288z" />
-                    </svg>
-                  </a>
-                </div>
-              </th>
-              <th scope="col" className="px-6 py-3">
-                <div className="flex items-center justify-center">
-                  Status
-                  <a href="#">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="w-3 h-3 ml-1"
-                      aria-hidden="true"
-                      fill="currentColor"
-                      viewBox="0 0 320 512"
-                    >
-                      <path d="M27.66 224h264.7c24.6 0 36.89-29.78 19.54-47.12l-132.3-136.8c-5.406-5.406-12.47-8.107-19.53-8.107c-7.055 0-14.09 2.701-19.45 8.107L8.119 176.9C-9.229 194.2 3.055 224 27.66 224zM292.3 288H27.66c-24.6 0-36.89 29.77-19.54 47.12l132.5 136.8C145.9 477.3 152.1 480 160 480c7.053 0 14.12-2.703 19.53-8.109l132.3-136.8C329.2 317.8 316.9 288 292.3 288z" />
-                    </svg>
-                  </a>
-                </div>
-              </th>
-              <th scope="col" className="px-6 py-3">
-                <div className="flex items-center justify-center">
-                  Action
-                  <a href="#">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="w-3 h-3 ml-1"
-                      aria-hidden="true"
-                      fill="currentColor"
-                      viewBox="0 0 320 512"
-                    >
-                      <path d="M27.66 224h264.7c24.6 0 36.89-29.78 19.54-47.12l-132.3-136.8c-5.406-5.406-12.47-8.107-19.53-8.107c-7.055 0-14.09 2.701-19.45 8.107L8.119 176.9C-9.229 194.2 3.055 224 27.66 224zM292.3 288H27.66c-24.6 0-36.89 29.77-19.54 47.12l132.5 136.8C145.9 477.3 152.1 480 160 480c7.053 0 14.12-2.703 19.53-8.109l132.3-136.8C329.2 317.8 316.9 288 292.3 288z" />
-                    </svg>
-                  </a>
-                </div>
-              </th>
-            </tr>
-          </thead>
-          {isLoading ? (
-            <tbody>
-              <tr className="text-center">
-                <td
-                  colSpan="5"
-                  style={{ verticalAlign: "middle", paddingTop: 20 }}
-                >
-                  <Loading />
-                </td>
-              </tr>
-            </tbody>
-          ) : (
-            <tbody>
-              {data.data.map((item, index) => (
-                <tr
-                  className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 text-center"
-                  key={item.id}
-                >
-                  <th
-                    scope="row"
-                    className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                  >
-                    {index + 1}
-                  </th>
-                  <td className="px-6 py-4">{item.nameCategory}</td>
-                  <td className="px-6 py-4">
-                    <p
-                      className={`${
-                        item.outstandingCategory === "outstanding"
-                          ? "px-2 py-1 inline-flex items-center rounded text-xs font-bold justify-center bg-green-500 text-white"
-                          : "px-2 py-1 inline-flex items-center rounded text-xs font-bold justify-center bg-red-500 text-white"
-                      }`}
-                    >
-                      {item.outstandingCategory === "outstanding"
-                        ? "Nổi Bật"
-                        : "Không Nổi Bật"}
-                    </p>
-                  </td>
-                  <td className="px-6 py-4">
-                    <p
-                      className={`${
-                        item.statusCategory === "stocking"
-                          ? "px-2 py-1 inline-flex items-center rounded text-xs font-bold justify-center bg-green-500 text-white"
-                          : "px-2 py-1 inline-flex items-center rounded text-xs font-bold justify-center bg-red-500 text-white"
-                      }`}
-                    >
-                      {item.statusCategory === "stocking"
-                        ? "Còn Hàng"
-                        : "Hết Hàng"}
-                    </p>
-                  </td>
-                  <td className="px-6 py-4">
-                    <Link
-                      to={`edit/${item.slugCategory}`}
-                      className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                    >
-                      Edit
-                    </Link>
-                    {" / "}
-                    <button
-                      onClick={() => showModal(item.id, item)}
-                      className="font-medium text-red-600 dark:text-blue-500 hover:underline"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          )}
-        </table>
-
-        <nav className="pt-4 text-center">
-          <ul className="inline-flex items-center -space-x-px">
-            <li>
-              {/* Previous page button */}
-              <a
-                className={`block px-3 py-2 ml-0 leading-tight ${
-                  data?.currentPage === 1
-                    ? "text-gray-300 cursor-not-allowed"
-                    : "text-gray-500 hover:text-gray-700"
-                } bg-white border border-gray-300 rounded-l-lg`}
-                onClick={() => handlePageChange(data?.currentPage - 1)}
-              >
-                <span className="sr-only">Previous</span>
-                {/* Previous page icon */}
-                <svg
-                  aria-hidden="true"
-                  className="w-5 h-5"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </a>
-            </li>
-            {/* Page numbers */}
-            {Array.from({ length: data?.totalPages }, (_, index) => (
-              <li key={index}>
-                <a
-                  className={`${
-                    data?.currentPage === index + 1
-                      ? "z-10 px-3 py-2 leading-tight text-blue-600 border border-blue-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
-                      : "px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                  }`}
-                  onClick={() => handlePageChange(index + 1)}
-                >
-                  {index + 1}
-                </a>
-              </li>
-            ))}
-            <li>
-              {/* Next page button */}
-              <a
-                className={`block px-3 py-2 leading-tight ${
-                  data?.currentPage === data?.totalPages
-                    ? "text-gray-300 cursor-not-allowed"
-                    : "text-gray-500 hover:text-gray-700"
-                } bg-white border border-gray-300 rounded-r-lg`}
-                onClick={() => {
-                  if (data?.currentPage !== data?.totalPages) {
-                    handlePageChange(data?.currentPage + 1);
-                  }
-                }}
-              >
-                <span className="sr-only">Next</span>
-                {/* Next page icon */}
-                <svg
-                  aria-hidden="true"
-                  className="w-5 h-5"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </a>
-            </li>
-          </ul>
-        </nav>
+        <DataTable
+          columns={huydev}
+          data={filteredData}
+          dense={false}
+          responsive={true}
+          pagination
+          selectableRows
+        />
       </div>
     </Layout>
   );

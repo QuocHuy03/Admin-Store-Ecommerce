@@ -16,23 +16,23 @@ export const fetchAllCategories = async () => {
   }
 };
 
-export const fetchAllCategoriesPage = async (page, limit) => {
-  try {
-    const state = store.getState();
-    const accessToken = state.auth.user.accessToken;
-    http.setAccessToken(accessToken);
-    const response = await http.get(
-      `/getAllCategories?page=${page}&limit=${limit}`
-    );
-    if (response.status === false) {
-      message.error(`${response.message}`);
-    } else {
-      return response;
-    }
-  } catch (error) {
-    console.error(error);
-  }
-};
+// export const fetchAllCategoriesPage = async (page, limit) => {
+//   try {
+//     const state = store.getState();
+//     const accessToken = state.auth.user.accessToken;
+//     http.setAccessToken(accessToken);
+//     const response = await http.get(
+//       `/getAllCategories?page=${page}&limit=${limit}`
+//     );
+//     if (response.status === false) {
+//       message.error(`${response.message}`);
+//     } else {
+//       return response;
+//     }
+//   } catch (error) {
+//     console.error(error);
+//   }
+// };
 
 export const fetchCategoryBySlug = async (slug) => {
   try {
