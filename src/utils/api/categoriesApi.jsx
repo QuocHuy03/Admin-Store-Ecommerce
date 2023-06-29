@@ -94,13 +94,13 @@ export const fetchDeleteCategoriesAll = async (id) => {
   }
 };
 
-
-export const fetchDeleteCategoriesByIds = async (id) => {
+export const fetchDeleteCategoriesByIds = async (data) => {
+  console.log(data)
   try {
     const state = store.getState();
     const accessToken = state.auth.user.accessToken;
     http.setAccessToken(accessToken);
-    const response = await http.delete(`/deleteCategoriesByIds`);
+    const response = await http.delete(`/deleteCategoriesByIds`, { data });
     return response;
   } catch (error) {
     console.error(error);

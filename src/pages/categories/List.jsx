@@ -136,7 +136,30 @@ export default function List() {
     const selectedIds = rows.selectedRows.map((row) => row.id);
     setSelectedRows(selectedIds);
   };
-  console.log(selectedRows)
+
+
+  const handleDeleteSelectedMutation = useMutation(
+    (id) => fetchDeleteCategoriesByIds(id),
+    {
+      onSuccess: (response) => {
+        if (response.status === true) {
+          message.success(`${response.message}`);
+        } else {
+          message.error(`${response.message}`);
+        }
+        queryClient.invalidateQueries(["categories"]);
+      },
+      onError: (error) => {
+        console.error(error);
+        message.error(`${error}`);
+      },
+    }
+  );
+
+  const handleDeleteSelected = () => {
+    console.log(selectedRows)
+    handleDeleteSelectedMutation.mutateAsync(selectedRows);
+  };
 
   const { data, isLoading } = useQuery(
     ["categories"],
@@ -250,17 +273,12 @@ export default function List() {
             </div>
 
             <button
-              
+              onClick={handleDeleteSelected}
               className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 ml-2"
             >
               Delete Selected
             </button>
-            <button
-            
-              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 ml-2"
-            >
-              Delete All
-            </button>
+     
           </div>
           <button
             onClick={openModal}
