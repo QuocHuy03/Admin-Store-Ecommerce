@@ -11,6 +11,7 @@ import {
   fetchAllCategories,
   fetchDeleteCategory,
   fetchPostCategory,
+  fetchUpdateCategory,
 } from "../../utils/api/categoriesApi";
 import Loading from "../../components/Loading";
 import { Link } from "react-router-dom";
@@ -22,6 +23,9 @@ export default function List() {
   const [dataIdToDelete, setDataIdToDelete] = useState(null);
   const [searchText, setSearchText] = useState("");
   const [categoryName, setCategoryName] = useState("");
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [categoryData, setCategoryData] = useState(null);
 
   const huydev = [
     {
@@ -73,12 +77,12 @@ export default function List() {
       name: "Actions",
       cell: (row) => (
         <div>
-          <Link
-            to={`edit/${row.slugCategory}`}
+          <button
+            onClick={() => editModal(row.id, row)}
             className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
           >
             Edit
-          </Link>{" "}
+          </button>{" "}
           /{" "}
           <button
             onClick={() => showModal(row.id, row)}
@@ -138,7 +142,6 @@ export default function List() {
       )
     : data;
 
-
   // modal
 
   const queryClient = useQueryClient();
@@ -146,8 +149,16 @@ export default function List() {
   const [isSubmitting, setIsSubmitting] = useState(false); // set loading button
 
   const openModal = () => {
+    setIsEditing(false);
     setIsOpenModal(true);
   };
+
+  const editModal = (id, item) => {
+    setCategoryData(item);
+    setIsEditing(true);
+    setIsOpenModal(true);
+  };
+
   const closeModal = () => {
     setIsOpenModal(false);
   };
@@ -161,6 +172,9 @@ export default function List() {
     reset,
   } = useForm();
 
+  const updateCategoryMutation = useMutation((data) =>
+    fetchUpdateCategory(categoryData.slugCategory, data)
+  );
   const postCategoryMutation = useMutation((data) => fetchPostCategory(data));
 
   const onSubmit = async (data) => {
@@ -169,7 +183,6 @@ export default function List() {
     try {
       // const formData = new FormData();
       // formData.append("file", data.imageCategory[0]);
-
       // const uploadResponse = await axios.post(
       //   `${httpApi}/api/uploadFile`,
       //   formData,
@@ -179,16 +192,27 @@ export default function List() {
       //     },
       //   }
       // );
-
       // const imageUrl = uploadResponse.data.secure_url;
       // data.imageCategory = imageUrl;
 
-      // Add mode
-      const response = await postCategoryMutation.mutateAsync(data);
-      if (response.status === true) {
-        message.success(`${response.message}`);
+      // Add , Update
+
+      if (isEditing) {
+        // Edit mode
+        const response = await updateCategoryMutation.mutateAsync(data);
+        if (response.status === true) {
+          message.success(`${response.message}`);
+        } else {
+          message.error(`${response.message}`);
+        }
       } else {
-        message.error(`${response.message}`);
+        // Add mode
+        const response = await postCategoryMutation.mutateAsync(data);
+        if (response.status === true) {
+          message.success(`${response.message}`);
+        } else {
+          message.error(`${response.message}`);
+        }
       }
 
       reset();
@@ -221,7 +245,7 @@ export default function List() {
         </div>
 
         <ModalForm
-          title={"Category"}
+          title={isEditing ? "Edit Category" : "Add Category"}
           isOpenModal={isOpenModal}
           onClose={closeModal}
           footer={[
@@ -240,7 +264,7 @@ export default function List() {
                 ) : null
               }
             >
-              Add
+              {isEditing ? "Update" : "Add"}
             </Button>,
           ]}
         >
@@ -257,6 +281,7 @@ export default function List() {
                   type="text"
                   id="nameCategory"
                   {...register("nameCategory", { required: true })}
+                  defaultValue={isEditing ? categoryData.nameCategory : ""}
                   placeholder="Macbook ..."
                   className={`${
                     errors.nameCategory ? "border-red-500" : "border-gray-300"
@@ -283,9 +308,9 @@ export default function List() {
                     errors.statusCategory ? "border-red-500" : "border-gray-300"
                   } bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
                   {...register("statusCategory", { required: true })}
-                  defaultValue="" // Update defaultValue attribute
+                  defaultValue={isEditing ? categoryData.statusCategory : ""}
                 >
-                  <option value="">Vui Lòng Chọn Trạng Thái </option>
+                  <option value="">Vui Lòng Chọn Trạng Thái</option>
                   <option value="stocking">Còn Hàng</option>
                   <option value="out-of-stock">Hết Hàng</option>
                 </select>
@@ -295,9 +320,10 @@ export default function List() {
                   </p>
                 )}
               </div>
+
               <div>
                 <label
-                  htmlFor="outstanding"
+                  htmlFor="outstandingCategory"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >
                   Outstanding
@@ -311,7 +337,9 @@ export default function List() {
                       : "border-gray-300"
                   } bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
                   {...register("outstandingCategory", { required: true })}
-                  defaultValue=""
+                  defaultValue={
+                    isEditing ? categoryData.outstandingCategory : ""
+                  }
                 >
                   <option value="">Vui Lòng Chọn Sản Phẩm Nổi Bật</option>
                   <option value="outstanding">Nổi Bật</option>
