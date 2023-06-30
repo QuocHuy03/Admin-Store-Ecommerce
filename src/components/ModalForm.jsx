@@ -1,14 +1,19 @@
 import React from "react";
-import { Button, Modal } from "antd";
+import { Modal } from "antd";
 
-export default function ModalForm({ title, isOpenModal, footer, onClose, children }) {
+export default function ModalForm({
+  title,
+  isOpenModal,
+  children,
+  footer,
+  onClose,
+}) {
   if (!isOpenModal) {
     return null;
   }
   const hideModal = () => {
     onClose(false);
   };
-
 
   return (
     // <div
@@ -63,7 +68,6 @@ export default function ModalForm({ title, isOpenModal, footer, onClose, childre
       onCancel={hideModal}
       footer={footer}
       width={700}
-  
     >
       {children}
     </Modal>

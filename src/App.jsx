@@ -4,7 +4,7 @@ import { Route, Routes, useNavigate } from "react-router-dom";
 import Home from "./pages/Home";
 import ListCategory from "./pages/categories/List";
 import ListProduct from "./pages/products/List";
-import ListOrder from "./pages/Order"
+import ListOrder from "./pages/Order";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
@@ -33,8 +33,8 @@ function App() {
         </Routes>
       ) : (
         <Routes>
-          <Route path="/auth" element={<Login />} exact />
-          <Route path="/auth/register" element={<Register />} exact />
+          <Route path="/auth" element={<Login />} />
+          <Route path="/auth/register" element={<Register />} />
         </Routes>
       )}
     </>

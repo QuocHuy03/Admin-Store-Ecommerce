@@ -28,6 +28,7 @@ export default function List() {
   const [searchText, setSearchText] = useState("");
   const [categoryName, setCategoryName] = useState("");
 
+  const [selectedRows, setSelectedRows] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [categoryData, setCategoryData] = useState(null);
 
@@ -105,7 +106,6 @@ export default function List() {
 
   const showModal = (item) => {
     if (item) {
-      console.log("oke");
       setDataIdToDelete(item.id);
       setCategoryName(item.nameCategory);
     } else {
@@ -149,8 +149,6 @@ export default function List() {
   });
 
   // delete checker
-
-  const [selectedRows, setSelectedRows] = useState([]);
 
   const handleRowSelected = (rows) => {
     const selectedIds = rows.selectedRows.map((row) => row.id);
@@ -209,7 +207,9 @@ export default function List() {
   };
 
   const closeModal = () => {
+    setIsEditing(false);
     setIsOpenModal(false);
+    reset();
   };
 
   // form add
@@ -217,9 +217,23 @@ export default function List() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
     reset,
   } = useForm();
+
+  useEffect(() => {
+    // Đặt giá trị ban đầu cho trường input khi khởi tạo
+    if (isEditing) {
+      setValue("nameCategory", categoryData.nameCategory);
+      setValue("statusCategory", categoryData.statusCategory);
+      setValue("outstandingCategory", categoryData.outstandingCategory);
+    } else {
+      setValue("nameCategory", "");
+      setValue("statusCategory", "");
+      setValue("outstandingCategory", "");
+    }
+  }, [isEditing, categoryData, setValue]);
 
   const updateCategoryMutation = useMutation((data) =>
     fetchUpdateCategory(categoryData.slugCategory, data)
@@ -340,9 +354,7 @@ export default function List() {
                 </label>
                 <input
                   type="text"
-                  id="nameCategory"
                   {...register("nameCategory", { required: true })}
-                  defaultValue={isEditing ? categoryData.nameCategory : ""}
                   placeholder="Macbook ..."
                   className={`${
                     errors.nameCategory ? "border-red-500" : "border-gray-300"
@@ -369,7 +381,6 @@ export default function List() {
                     errors.statusCategory ? "border-red-500" : "border-gray-300"
                   } bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
                   {...register("statusCategory", { required: true })}
-                  defaultValue={isEditing ? categoryData.statusCategory : ""}
                 >
                   <option value="">Vui Lòng Chọn Trạng Thái</option>
                   <option value="stocking">Còn Hàng</option>
@@ -398,9 +409,6 @@ export default function List() {
                       : "border-gray-300"
                   } bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
                   {...register("outstandingCategory", { required: true })}
-                  defaultValue={
-                    isEditing ? categoryData.outstandingCategory : ""
-                  }
                 >
                   <option value="">Vui Lòng Chọn Sản Phẩm Nổi Bật</option>
                   <option value="outstanding">Nổi Bật</option>
