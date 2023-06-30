@@ -163,6 +163,9 @@ export default function List() {
       onSuccess: (response) => {
         if (response.status === true) {
           message.success(`${response.message}`);
+          setSelectedRows("")
+          setCategoryName("");
+          setDataIdToDelete("");
         } else {
           message.error(`${response.message}`);
         }
@@ -180,6 +183,7 @@ export default function List() {
     () => fetchAllCategories(),
     {
       staleTime: 1000,
+      refetchOnMount: false,
     }
   );
 
@@ -431,7 +435,9 @@ export default function List() {
             </Button>,
           ]}
         >
-          Are you sure you want to delete the category "{categoryName}" ?
+          Are you sure you want to delete the{" "}
+          {categoryName ? "category" : "categories"} "
+          {categoryName ? categoryName : selectedRows.length}" ?
         </ModalMessage>
 
         <DataTable
