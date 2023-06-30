@@ -76,7 +76,6 @@ export default function List() {
         </div>
       ),
     },
-
     {
       name: "Actions",
       cell: (row) => (
@@ -89,7 +88,7 @@ export default function List() {
           </button>{" "}
           /{" "}
           <button
-            onClick={() => showModal(row.id, row)}
+            onClick={() => showModal(row)}
             className="font-medium text-red-600 dark:text-blue-500 hover:underline"
           >
             Delete
@@ -101,18 +100,35 @@ export default function List() {
       button: true,
     },
   ];
-  
+
   // modal message
 
-  const showModal = (id, item) => {
-    setDataIdToDelete(id);
-    setCategoryName(item.nameCategory);
+  const showModal = (item) => {
+    if (item) {
+      console.log("oke");
+      setDataIdToDelete(item.id);
+      setCategoryName(item.nameCategory);
+    } else {
+      console.log("Đã Đúng Select");
+    }
     setIsModalDelete(true);
   };
+
   const handleOk = () => {
-    deleteCategoryMutation.mutateAsync(dataIdToDelete);
+    if (selectedRows && selectedRows.length > 0) {
+      handleDeleteSelectedMutation.mutateAsync(selectedRows);
+    } else if (dataIdToDelete) {
+      deleteCategoryMutation.mutateAsync(dataIdToDelete);
+    } else {
+      message.error(`Bạn chưa chọn hoặc cung cấp dữ liệu muốn xóa!`);
+      setIsModalDelete(false);
+      return;
+    }
     setIsModalDelete(false);
+    setCategoryName("");
+    setDataIdToDelete("");
   };
+
   const handleCancel = () => {
     setIsModalDelete(false);
   };
@@ -159,14 +175,6 @@ export default function List() {
     }
   );
 
-  const handleDeleteSelected = () => {
-    if (selectedRows.length === 0) {
-      message.error(`Bạn chưa chọn dữ liệu muốn xóa !`);
-      return;
-    }
-    handleDeleteSelectedMutation.mutateAsync(selectedRows);
-  };
-
   const { data, isLoading } = useQuery(
     ["categories"],
     () => fetchAllCategories(),
@@ -183,7 +191,7 @@ export default function List() {
       )
     : data;
 
-  // modal form 
+  // modal form
 
   const openModal = () => {
     setIsEditing(false);
@@ -279,7 +287,7 @@ export default function List() {
             </div>
 
             <button
-              onClick={handleDeleteSelected}
+              onClick={() => showModal(null)}
               className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 ml-2"
             >
               Delete Selected
