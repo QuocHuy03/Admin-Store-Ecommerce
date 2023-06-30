@@ -163,7 +163,7 @@ export default function List() {
       onSuccess: (response) => {
         if (response.status === true) {
           message.success(`${response.message}`);
-          setSelectedRows("")
+          setSelectedRows("");
           setCategoryName("");
           setDataIdToDelete("");
         } else {
@@ -292,7 +292,7 @@ export default function List() {
 
             <button
               onClick={() => showModal(null)}
-              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 ml-2"
+              className="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-red-800 ml-2"
             >
               Delete Selected
             </button>
@@ -439,16 +439,19 @@ export default function List() {
           {categoryName ? "category" : "categories"} "
           {categoryName ? categoryName : selectedRows.length}" ?
         </ModalMessage>
-
-        <DataTable
-          columns={huydev}
-          data={filteredData}
-          dense={false}
-          responsive={true}
-          pagination
-          selectableRows
-          onSelectedRowsChange={handleRowSelected}
-        />
+        {isLoading ? (
+          <Loading />
+        ) : (
+          <DataTable
+            columns={huydev}
+            data={filteredData}
+            dense={false}
+            responsive={true}
+            pagination
+            selectableRows
+            onSelectedRowsChange={handleRowSelected}
+          />
+        )}
       </div>
     </Layout>
   );
