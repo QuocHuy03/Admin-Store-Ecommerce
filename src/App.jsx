@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router-dom";
-import Web from "./routes/web";
+import Web from "./routes/Web";
 
 function App() {
   return (
