@@ -2,9 +2,9 @@ import React, { useState, useContext, useEffect } from "react";
 import Layout from "../../libs/Layout";
 import { AppContext } from "../../context/AppContextProvider";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import ModalForm from "../../components/Modal";
+import ModalForm from "../../components/ModalForm";
 import { useForm } from "react-hook-form";
-import { Button, Modal } from "antd";
+import { Button } from "antd";
 import { message } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import {
@@ -17,6 +17,7 @@ import {
 import Loading from "../../components/Loading";
 import { Link } from "react-router-dom";
 import DataTable from "react-data-table-component";
+import ModalMessage from "../../components/ModalMessage";
 
 export default function List() {
   const { isOpenModal, setIsOpenModal } = useContext(AppContext);
@@ -100,8 +101,9 @@ export default function List() {
       button: true,
     },
   ];
-
   
+  // modal message
+
   const showModal = (id, item) => {
     setDataIdToDelete(id);
     setCategoryName(item.nameCategory);
@@ -130,13 +132,14 @@ export default function List() {
     },
   });
 
+  // delete checker
+
   const [selectedRows, setSelectedRows] = useState([]);
 
   const handleRowSelected = (rows) => {
     const selectedIds = rows.selectedRows.map((row) => row.id);
     setSelectedRows(selectedIds);
   };
-
 
   const handleDeleteSelectedMutation = useMutation(
     (id) => fetchDeleteCategoriesByIds(id),
@@ -157,7 +160,10 @@ export default function List() {
   );
 
   const handleDeleteSelected = () => {
-    console.log(selectedRows)
+    if (selectedRows.length === 0) {
+      message.error(`Bạn chưa chọn dữ liệu muốn xóa !`);
+      return;
+    }
     handleDeleteSelectedMutation.mutateAsync(selectedRows);
   };
 
@@ -169,7 +175,7 @@ export default function List() {
     }
   );
 
-  // search
+  // search data
 
   const filteredData = searchText
     ? data.filter((huyit) =>
@@ -177,7 +183,7 @@ export default function List() {
       )
     : data;
 
-  // modal
+  // modal form 
 
   const openModal = () => {
     setIsEditing(false);
@@ -278,7 +284,6 @@ export default function List() {
             >
               Delete Selected
             </button>
-     
           </div>
           <button
             onClick={openModal}
@@ -399,11 +404,11 @@ export default function List() {
           </form>
         </ModalForm>
 
-        <Modal
+        <ModalMessage
           title="Delete Category"
-          open={isModalDelete}
-          onOk={handleOk}
-          onCancel={handleCancel}
+          openModal={isModalDelete}
+          onSubmitOk={handleOk}
+          onClose={handleCancel}
           footer={[
             <Button key="cancel" onClick={handleCancel}>
               Cancel
@@ -419,7 +424,7 @@ export default function List() {
           ]}
         >
           Are you sure you want to delete the category "{categoryName}" ?
-        </Modal>
+        </ModalMessage>
 
         <DataTable
           columns={huydev}
