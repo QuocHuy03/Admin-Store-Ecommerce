@@ -8,6 +8,7 @@ import ListOrder from "./pages/Order";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
+import AddProduct from "./pages/products/Add";
 import { message } from "antd";
 
 function App() {
@@ -17,9 +18,8 @@ function App() {
   useEffect(() => {
     if (user) {
       if (user.role === "ADMIN") {
-        navigate("/");
+        // navigate("/");
       } else {
-    
         navigate("/auth");
       }
     } else {
@@ -35,6 +35,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/categories" element={<ListCategory />} />
             <Route path="/products" element={<ListProduct />} />
+            <Route path="/product/add" element={<AddProduct />} />
             <Route path="/orders" element={<ListOrder />} />
             <Route path="*" element={<NotFound />} />
           </>
@@ -44,7 +45,6 @@ function App() {
             <Route path="/auth/register" element={<Register />} />
           </>
         )}
-       
       </Routes>
     </>
   );

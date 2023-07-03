@@ -15,7 +15,6 @@ import {
   fetchUpdateCategory,
 } from "../../utils/api/categoriesApi";
 import Loading from "../../components/Loading";
-import { Link } from "react-router-dom";
 import DataTable from "react-data-table-component";
 import ModalMessage from "../../components/ModalMessage";
 

@@ -1,6 +1,5 @@
 import store from "../../redux/store";
 import Http from "../http";
-import { message } from "antd";
 
 const http = new Http();
 
