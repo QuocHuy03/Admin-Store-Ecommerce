@@ -105,7 +105,8 @@ export default function List() {
   // modal message
 
   const showModal = (item) => {
-    if (item) {
+    console.log(item);
+    if (item !== null && item !== undefined) {
       setDataIdToDelete(item.id);
       setCategoryName(item.nameCategory);
     } else {
@@ -113,6 +114,7 @@ export default function List() {
     }
     setIsModalDelete(true);
   };
+  
 
   const handleOk = () => {
     if (selectedRows && selectedRows.length > 0) {
@@ -131,6 +133,8 @@ export default function List() {
 
   const handleCancel = () => {
     setIsModalDelete(false);
+    setDataIdToDelete(null);
+    setCategoryName(null);
   };
 
   const deleteCategoryMutation = useMutation((id) => fetchDeleteCategory(id), {
@@ -315,7 +319,7 @@ export default function List() {
             onClick={openModal}
             className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 ml-2"
           >
-            Add Category
+            Add
           </button>
         </div>
 

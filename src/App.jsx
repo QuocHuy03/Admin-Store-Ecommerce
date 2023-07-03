@@ -8,35 +8,44 @@ import ListOrder from "./pages/Order";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
+import { message } from "antd";
 
 function App() {
   const navigate = useNavigate();
-  // const dispatch = useDispatch();
-  const { isLoggedIn } = useSelector((state) => state.auth);
-
-  // const persistedState = store.getState();
-  // console.log(persistedState)
+  const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (!isLoggedIn) navigate("/auth");
-    else navigate("/");
-  }, [isLoggedIn]);
+    if (user) {
+      if (user.role === "ADMIN") {
+        navigate("/");
+      } else {
+    
+        navigate("/auth");
+      }
+    } else {
+      navigate("/auth");
+    }
+  }, [user]);
+
   return (
     <>
-      {isLoggedIn ? (
-        <Routes>
-          <Route path="/" exact element={<Home />} />
-          <Route path="/categories" element={<ListCategory />} />
-          <Route path="/products" element={<ListProduct />} />
-          <Route path="/orders" element={<ListOrder />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      ) : (
-        <Routes>
-          <Route path="/auth" element={<Login />} />
-          <Route path="/auth/register" element={<Register />} />
-        </Routes>
-      )}
+      <Routes>
+        {user && user.role === "ADMIN" ? (
+          <>
+            <Route path="/" element={<Home />} />
+            <Route path="/categories" element={<ListCategory />} />
+            <Route path="/products" element={<ListProduct />} />
+            <Route path="/orders" element={<ListOrder />} />
+            <Route path="*" element={<NotFound />} />
+          </>
+        ) : (
+          <>
+            <Route path="/auth" element={<Login />} />
+            <Route path="/auth/register" element={<Register />} />
+          </>
+        )}
+       
+      </Routes>
     </>
   );
 }
