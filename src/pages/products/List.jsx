@@ -3,6 +3,7 @@ import Layout from "../../libs/Layout";
 import DataTable from "react-data-table-component";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAllCategories } from "../../utils/api/categoriesApi";
+import { fetchAllProducts } from "../../utils/api/productsApi";
 
 export default function List() {
   const huydev = [
@@ -79,7 +80,7 @@ export default function List() {
 
   const { data, isLoading, refetch } = useQuery(
     ["products"],
-    () => fetchAllCategories(),
+    () => fetchAllProducts(),
     {
       staleTime: 1000,
     }
