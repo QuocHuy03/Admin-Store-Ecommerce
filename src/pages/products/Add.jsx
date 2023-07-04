@@ -1,22 +1,42 @@
 import React, { useState } from "react";
 import Layout from "../../libs/Layout";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { fetchPostProduct } from "../../utils/api/productsApi";
-import { useMutation } from "@tanstack/react-query";
+import { fetchAllCategories } from "../../utils/api/categoriesApi";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
 export default function Add() {
+  const { data, isLoading } = useQuery(
+    ["categories"],
+    () => fetchAllCategories(),
+    {
+      staleTime: 1000,
+      refetchOnMount: false,
+    }
+  );
+
   const [isSubmitting, setIsSubmitting] = useState(false); // set loading button
   const {
     register,
     handleSubmit,
     setValue,
+    control,
     formState: { errors },
     reset,
   } = useForm();
 
+  const handleImageUpload = (event) => {
+    const selectedImages = Array.from(event.target.files);
+    console.log(selectedImages);
+    // Tiếp tục xử lý các tệp ảnh đã chọn
+  };
+
   const postProductMutation = useMutation((data) => fetchPostProduct(data));
 
   const onSubmit = async (data) => {
+    console.log(data);
     setIsSubmitting(true);
 
     try {
@@ -52,7 +72,7 @@ export default function Add() {
   };
   return (
     <Layout>
-      <form>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid gap-6 mb-6 md:grid-cols-2">
           <div>
             <label
@@ -114,6 +134,11 @@ export default function Add() {
               {...register("categoryID", { required: true })}
             >
               <option value="">Vui Lòng Chọn Trạng Thái</option>
+              {data?.map((item, index) => (
+                <option key={index} defaultValue={item.id}>
+                  {item.nameCategory}
+                </option>
+              ))}
             </select>
             {errors.categoryID && (
               <p className="text-red-500 text-sm mt-1">
@@ -145,28 +170,26 @@ export default function Add() {
           </div>
           <div>
             <label
-              htmlFor="contentProduct"
               className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              htmlFor="default_size"
             >
-              Nội Dung
+              Image Products
             </label>
-
-            <textarea
-              id="contentProduct"
-              rows="4"
+            <input
               className={`${
-                errors.contentProduct ? "border-red-500" : "border-gray-300"
+                errors.imageProducts ? "border-red-500" : "border-gray-300"
               } bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
-              {...register("contentProduct", { required: true })}
-              placeholder="Nội Dung"
-            ></textarea>
+              type="file"
+              id="default_size"
+              multiple
+              {...register("imageProducts", { required: true })}
+            />
 
-            {errors.contentProduct && (
-              <p className="text-red-500 text-sm mt-1">
-                * Content Product is required
-              </p>
+            {errors.imageProducts && (
+              <p className="text-red-500 text-sm mt-1">* Images is required</p>
             )}
           </div>
+
           <div>
             <label
               htmlFor="statusProduct"
@@ -192,23 +215,63 @@ export default function Add() {
           </div>
         </div>
 
-        {/* <div className="mb-6">
+        <div className="mb-6">
           <label
-            htmlFor="email"
+            htmlFor="contentProduct"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
-            Email address
+            Nội Dung
           </label>
-          <input
-            type="email"
-            id="email"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            placeholder="john.doe@company.com"
-            required
+
+          <textarea
+            id="contentProduct"
+            rows="4"
+            className={`${
+              errors.contentProduct ? "border-red-500" : "border-gray-300"
+            } bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
+            {...register("contentProduct", { required: true })}
+            placeholder="Nội Dung"
+          ></textarea>
+
+          {errors.contentProduct && (
+            <p className="text-red-500 text-sm mt-1">
+              * Content Product is required
+            </p>
+          )}
+        </div>
+
+        <div className="mb-6">
+          <Controller
+            control={control}
+            name="descriptionProduct"
+            rules={{ required: true }}
+            render={({ field }) => (
+              <CKEditor
+                editor={ClassicEditor}
+                data={field.value}
+                onChange={(event, editor) => {
+                  const data = editor.getData();
+                  field.onChange(data);
+                }}
+                onReady={(editor) => {
+                  editor.editing.view.change((writer) => {
+                    writer.setStyle(
+                      "height",
+                      "200px",
+                      editor.editing.view.document.getRoot()
+                    );
+                  });
+                }}
+              />
+            )}
           />
-        </div> */}
-     
-       
+          {errors.descriptionProduct && (
+            <p className="text-red-500 text-sm mt-1">
+              * Description is required
+            </p>
+          )}
+        </div>
+
         <button
           type="submit"
           className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
