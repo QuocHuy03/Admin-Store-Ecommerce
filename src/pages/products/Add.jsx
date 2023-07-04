@@ -6,6 +6,8 @@ import { fetchAllCategories } from "../../utils/api/categoriesApi";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import axios from "axios";
+import { httpApi } from "../../dev";
 
 export default function Add() {
   const { data, isLoading } = useQuery(
@@ -40,19 +42,25 @@ export default function Add() {
     setIsSubmitting(true);
 
     try {
-      // const formData = new FormData();
-      // formData.append("file", data.imageCategory[0]);
-      // const uploadResponse = await axios.post(
-      //   `${httpApi}/api/uploadFile`,
-      //   formData,
-      //   {
-      //     headers: {
-      //       "Content-Type": "multipart/form-data",
-      //     },
-      //   }
-      // );
-      // const imageUrl = uploadResponse.data.secure_url;
-      // data.imageCategory = imageUrl;
+      const formData = new FormData();
+      const imageFiles = Array.from(data.imageProducts); 
+
+      imageFiles.forEach((file, index) => {
+        formData.append(`file[${index}]`, file);
+      });
+
+      const uploadResponse = await axios.post(
+        `${httpApi}/api/uploadFile`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      const imageUrls = uploadResponse.data.map((file) => file.secure_url);
+      data.imageProducts = imageUrls;
 
       // Add , Update
 
