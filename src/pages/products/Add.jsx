@@ -34,7 +34,6 @@ export default function Add() {
   const postProductMutation = useMutation((data) => fetchPostProduct(data));
 
   const onSubmit = async (data) => {
-    console.log(data);
     setIsSubmitting(true);
 
     try {

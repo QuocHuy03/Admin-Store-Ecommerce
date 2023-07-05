@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import AddProduct from "./pages/products/Add";
+import EditProduct from "./pages/products/Edit";
 import { message } from "antd";
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
             <Route path="/categories" element={<ListCategory />} />
             <Route path="/products" element={<ListProduct />} />
             <Route path="/product/add" element={<AddProduct />} />
+            <Route path="/product/edit/:slug" element={<EditProduct />} />
             <Route path="/orders" element={<ListOrder />} />
             <Route path="*" element={<NotFound />} />
           </>
