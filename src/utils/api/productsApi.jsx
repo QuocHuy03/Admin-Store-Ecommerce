@@ -81,24 +81,24 @@ export const fetchDeleteProduct = async (id) => {
   }
 };
 
-export const fetchDeleteCategoriesAll = async (id) => {
+export const fetchDeleteProductesAll = async (id) => {
   try {
     const state = store.getState();
     const accessToken = state.auth.user.accessToken;
     http.setAccessToken(accessToken);
-    const response = await http.delete(`/deleteCategoriesAll`);
+    const response = await http.delete(`/deleteProductsAll`);
     return response;
   } catch (error) {
     console.error(error);
   }
 };
 
-export const fetchDeleteCategoriesByIds = async (data) => {
+export const fetchDeleteProductsByIds = async (data) => {
   try {
     const state = store.getState();
     const accessToken = state.auth.user.accessToken;
     http.setAccessToken(accessToken);
-    const response = await http.delete(`/deleteCategoriesByIds`, { data });
+    const response = await http.delete(`/deleteProductsByIds`, { data });
     return response;
   } catch (error) {
     console.error(error);

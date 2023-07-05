@@ -29,8 +29,6 @@ export default function Add() {
     reset,
   } = useForm();
 
-
-
   const postProductMutation = useMutation((data) => fetchPostProduct(data));
 
   const onSubmit = async (data) => {
@@ -139,7 +137,7 @@ export default function Add() {
             >
               <option value="">Vui Lòng Chọn Trạng Thái</option>
               {data?.map((item, index) => (
-                <option key={index} defaultValue={item.id}>
+                <option key={index} value={item.id}>
                   {item.nameCategory}
                 </option>
               ))}

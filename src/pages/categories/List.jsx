@@ -104,7 +104,6 @@ export default function List() {
   // modal message
 
   const showModal = (item) => {
-    console.log(item);
     if (item !== null && item !== undefined) {
       setDataIdToDelete(item.id);
       setCategoryName(item.nameCategory);
