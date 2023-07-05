@@ -29,11 +29,7 @@ export default function Add() {
     reset,
   } = useForm();
 
-  const handleImageUpload = (event) => {
-    const selectedImages = Array.from(event.target.files);
-    console.log(selectedImages);
-    // Tiếp tục xử lý các tệp ảnh đã chọn
-  };
+
 
   const postProductMutation = useMutation((data) => fetchPostProduct(data));
 
