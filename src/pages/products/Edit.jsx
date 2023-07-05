@@ -15,7 +15,7 @@ import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
 export default function Edit() {
   const { slug } = useParams();
-  const [isSubmitting, setIsSubmitting] = useState(false); // set loading button
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSlug, setIsSlug] = useState(slug || "");
   const queryClient = useQueryClient();
 
@@ -39,7 +39,6 @@ export default function Edit() {
     () => fetchProductBySlug(isSlug),
     {
       staleTime: 500,
-      enabled: Boolean(isSlug),
     }
   );
 
@@ -84,7 +83,7 @@ export default function Edit() {
       </div>
       <div className="p-6 space-y-6">
         <form onSubmit={handleSubmit(onSubmit)}>
-          {loadingProduct && loadingCategory ? (
+          {loadingProduct ? (
             <Loading />
           ) : (
             <>
@@ -257,11 +256,11 @@ export default function Edit() {
                   control={control}
                   name="descriptionProduct"
                   rules={{ required: true }}
-                  defaultValue={dataProduct.descriptionProduct} // Gán giá trị mặc định từ dữ liệu cũ
+                  defaultValue={dataProduct.descriptionProduct}
                   render={({ field }) => (
                     <CKEditor
                       editor={ClassicEditor}
-                      data={field.value} // Sử dụng giá trị từ field.value
+                      data={field.value}
                       onChange={(event, editor) => {
                         const data = editor.getData();
                         field.onChange(data);
