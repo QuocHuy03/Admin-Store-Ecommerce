@@ -43,10 +43,10 @@ export default function Add() {
 
     try {
       const formData = new FormData();
-      const imageFiles = Array.from(data.imageProducts); 
+      const imageFiles = Array.from(data.imageProducts);
 
       imageFiles.forEach((file, index) => {
-        formData.append(`file[${index}]`, file);
+        formData.append(`file[]`, file);
       });
 
       const uploadResponse = await axios.post(
@@ -58,8 +58,9 @@ export default function Add() {
           },
         }
       );
+      // console.log(uploadResponse.data);
 
-      const imageUrls = uploadResponse.data.map((file) => file.secure_url);
+      const imageUrls = uploadResponse.data.secure_urls.map((file) => file);
       data.imageProducts = imageUrls;
 
       // Add , Update
