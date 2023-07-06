@@ -15,12 +15,12 @@ export const fetchAllUsers = async () => {
   }
 };
 
-export const fetchUpdateUser = async (slug, data) => {
+export const fetchUpdateUser = async (id, data) => {
   try {
     const state = store.getState();
     const accessToken = state.auth.user.accessToken;
     http.setAccessToken(accessToken);
-    const response = await http.update(`/updateUser/${slug}`, data);
+    const response = await http.update(`/updateUser/${id}`, data);
     return response;
   } catch (error) {
     console.error(error);
