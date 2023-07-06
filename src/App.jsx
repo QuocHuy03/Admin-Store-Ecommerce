@@ -18,7 +18,7 @@ function App() {
   useEffect(() => {
     if (user) {
       if (user.role === "ADMIN") {
-        // navigate("/");
+        navigate("/");
       } else {
         navigate("/auth");
       }

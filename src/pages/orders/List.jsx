@@ -91,11 +91,6 @@ export default function List() {
     },
   ];
 
-  const handleRowSelected = (rows) => {
-    const selectedIds = rows.selectedRows.map((row) => row.id);
-    setSelectedRows(selectedIds);
-  };
-
   // search data
 
   const filteredData = searchText
@@ -112,8 +107,6 @@ export default function List() {
         dense={false}
         responsive={true}
         pagination
-        selectableRows
-        // onSelectedRowsChange={handleRowSelected}
       />
     </Layout>
   );
