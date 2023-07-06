@@ -10,6 +10,7 @@ import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import AddProduct from "./pages/products/Add";
 import EditProduct from "./pages/products/Edit";
+import ListUser from "./pages/users/List";
 
 function App() {
   const navigate = useNavigate();
@@ -38,6 +39,7 @@ function App() {
             <Route path="/product/add" element={<AddProduct />} />
             <Route path="/product/edit/:slug" element={<EditProduct />} />
             <Route path="/orders" element={<ListOrder />} />
+            <Route path="/users" element={<ListUser />} />
             <Route path="*" element={<NotFound />} />
           </>
         ) : (
