@@ -29,12 +29,12 @@ export default function List() {
     },
     {
       name: "PHONE",
-      selector: (row) => row.phone,
+      selector: (row) => row.phone ? row.phone : "Chưa Cập Nhật",
       sortable: true,
     },
     {
       name: "ADDRESS",
-      selector: (row) => row.address,
+      selector: (row) => row.address ? row.address : "Chưa Cập Nhật",
       sortable: true,
     },
     {
@@ -44,7 +44,7 @@ export default function List() {
     },
 
     {
-      name: "Actions",
+      name: "ACTIONS",
       cell: (row) => (
         <div>
           <button

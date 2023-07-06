@@ -67,7 +67,7 @@ export default function List() {
       ),
     },
     {
-      name: "Actions",
+      name: "ACTIONS",
       cell: (row) => (
         <div>
           <Link
