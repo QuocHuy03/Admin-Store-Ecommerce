@@ -4,13 +4,12 @@ import { Route, Routes, useNavigate } from "react-router-dom";
 import Home from "./pages/Home";
 import ListCategory from "./pages/categories/List";
 import ListProduct from "./pages/products/List";
-import ListOrder from "./pages/Order";
+import ListOrder from "./pages/orders/List";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import AddProduct from "./pages/products/Add";
 import EditProduct from "./pages/products/Edit";
-import { message } from "antd";
 
 function App() {
   const navigate = useNavigate();
