@@ -39,6 +39,18 @@ export const fetchPostOrder = async (data) => {
   }
 };
 
+export const fetchUpdateOrder = async (slug, data) => {
+  try {
+    const state = store.getState();
+    const accessToken = state.auth.user.accessToken;
+    http.setAccessToken(accessToken);
+    const response = await http.update(`/updateOrder/${slug}`, data);
+    return response;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 
 export const fetchDeleteOrder = async (id) => {
   try {

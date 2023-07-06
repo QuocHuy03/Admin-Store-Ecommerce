@@ -1,12 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
-import { fetchAllOrders } from "../../utils/api/ordersApi";
+import { fetchAllUsers } from "../../utils/api/userApi";
 import Layout from "../../libs/Layout";
 import DataTable from "react-data-table-component";
+import { Link } from "react-router-dom";
 
 export default function List() {
   const [searchText, setSearchText] = useState("");
-  const { data, isLoading } = useQuery(["users"], () => fetchAllOrders(), {
+  const { data, isLoading } = useQuery(["users"], () => fetchAllUsers(), {
     staleTime: 1000,
   });
 
@@ -17,64 +18,41 @@ export default function List() {
       sortable: true,
     },
     {
-      name: "NAME",
-      selector: (row) => row.nameProduct,
+      name: "USERNAME",
+      selector: (row) => row.username,
       sortable: true,
     },
     {
-      name: "IMAGE",
-      cell: (row) => (
-        <img
-          src={row.imagePaths.split(",")[0]}
-          alt="Product Image"
-          style={{ width: "50px", height: "50px" }}
-        />
-      ),
+      name: "FULLNAME",
+      selector: (row) => row.fullname,
       sortable: true,
     },
     {
-      name: "CATEGORY",
-      selector: (row) => row.nameCategory,
+      name: "PHONE",
+      selector: (row) => row.phone,
       sortable: true,
     },
     {
-      name: "PRICE INITIAL",
-      selector: (row) => row.initial_price,
+      name: "ADDRESS",
+      selector: (row) => row.address,
       sortable: true,
-      cell: (row) => <span>{row.initial_price.toLocaleString()} VND</span>,
     },
     {
-      name: "PRICE ROPED",
-      selector: (row) => row.price_has_ropped,
+      name: "ROLE",
+      selector: (row) => row.role,
       sortable: true,
-      cell: (row) => <span>{row.price_has_ropped.toLocaleString()} VND</span>,
     },
-    {
-      name: "STATUS",
-      selector: (row) => row.statusProduct,
-      sortable: true,
-      cell: (row) => (
-        <div
-          className={`${
-            row.statusProduct === "stocking"
-              ? "px-2 py-1 inline-flex items-center rounded text-xs font-bold justify-center bg-green-500 text-white"
-              : "px-2 py-1 inline-flex items-center rounded text-xs font-bold justify-center bg-red-500 text-white"
-          }`}
-        >
-          {row.statusProduct === "stocking" ? "Còn Hàng" : "Hết Hàng"}
-        </div>
-      ),
-    },
+
     {
       name: "Actions",
       cell: (row) => (
         <div>
-          <Link
-            to={`/product/edit/${row.slugProduct}`}
+          <button
+            onClick={() => showModal(row)}
             className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
           >
             Edit
-          </Link>{" "}
+          </button>{" "}
           /{" "}
           <button
             onClick={() => showModal(row)}
@@ -94,7 +72,7 @@ export default function List() {
 
   const filteredData = searchText
     ? data.filter((huyit) =>
-        huyit.nameProduct.toLowerCase().includes(searchText.toLowerCase())
+        huyit.username.toLowerCase().includes(searchText.toLowerCase())
       )
     : data;
 
@@ -106,6 +84,8 @@ export default function List() {
         dense={false}
         responsive={true}
         pagination
+        selectableRows
+        // onSelectedRowsChange={handleRowSelected}
       />
     </Layout>
   );
