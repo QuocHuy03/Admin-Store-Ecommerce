@@ -43,7 +43,7 @@ export default function List() {
       name: "IMAGE",
       cell: (row) => (
         <img
-          src={row.imagePaths.split(",")[0]}
+        src={row.imagePaths ? row.imagePaths.split(",")[0] : null}
           alt="Product Image"
           style={{ width: "50px", height: "50px" }}
         />

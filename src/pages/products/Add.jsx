@@ -18,7 +18,7 @@ export default function Add() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [descriptionData, setDescriptionData] = useState("");
   const [contentData, setContentData] = useState("");
-
+  const [isImageRequired, setIsImageRequired] = useState(true);
   const [fileList, setFileList] = useState([]);
 
   const size = "large";
@@ -77,19 +77,19 @@ export default function Add() {
       })
     );
 
+    setIsImageRequired(false);
     setFileList(fileList);
   };
 
   const handleRemove = (file) => {
     const newFileList = fileList.filter((item) => item.uid !== file.uid);
     setFileList(newFileList);
+    setIsImageRequired(true);
   };
 
   const postProductMutation = useMutation((data) => fetchPostProduct(data));
 
   const onFinish = async (values) => {
-    console.log(values);
-
     setIsSubmitting(true);
     values.descriptionProduct = descriptionData;
     values.contentProduct = contentData;
@@ -229,17 +229,16 @@ export default function Add() {
 
         <div className="mb-6">
           <Form.Item
-            label="Images"
+            label={`Images ${isImageRequired}`}
             name="imageProducts"
             style={{
               marginBottom: 0,
             }}
-            rules={[
-              {
-                required: fileList.length === 0,
-                message: "* Images is required",
-              },
-            ]}
+            // rules={
+            //   isImageRequired
+            //     ? [{ required: true, message: "* Images is required" }]
+            //     : undefined
+            // }
           >
             <Upload
               listType="picture"
@@ -271,6 +270,9 @@ export default function Add() {
                 </List.Item>
               )}
             />
+            {isImageRequired && (
+              <div className="text-red-500">* Images is required</div>
+            )}
           </Form.Item>
         </div>
 
