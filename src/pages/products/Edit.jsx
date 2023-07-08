@@ -28,6 +28,7 @@ export default function Edit() {
   const [fileList, setFileList] = useState([]);
   const [isSlug, setIsSlug] = useState(slug || "");
   const [isImageUpdateAllowed, setIsImageUpdateAllowed] = useState(false);
+
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
   useEffect(() => {
@@ -52,7 +53,6 @@ export default function Edit() {
       staleTime: 500,
     }
   );
-  console.log(isImageUpdateAllowed);
 
   useEffect(() => {
     if (dataProduct) {
@@ -150,7 +150,7 @@ export default function Edit() {
   };
 
   const updateProductMutation = useMutation((data) =>
-    fetchUpdateProduct(isSlug, data)
+    fetchUpdateProduct(isSlug, isImageUpdateAllowed, data)
   );
 
   const onFinish = async (values) => {

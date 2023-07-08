@@ -57,12 +57,16 @@ export const fetchPostProduct = async (data) => {
   }
 };
 
-export const fetchUpdateProduct = async (slug, data) => {
+export const fetchUpdateProduct = async (slug, isEdit, data) => {
+  console.log(isEdit);
   try {
     const state = store.getState();
     const accessToken = state.auth.user.accessToken;
     http.setAccessToken(accessToken);
-    const response = await http.update(`/updateProduct/${slug}`, data);
+    const response = await http.update(
+      `/updateProduct/${slug}?isEdit=${isEdit}`,
+      data
+    );
     return response;
   } catch (error) {
     console.error(error);
