@@ -208,6 +208,7 @@ export default function List() {
             data={filteredData}
             dense={false}
             responsive={true}
+            isRTL={true}
             pagination
           />
         )}

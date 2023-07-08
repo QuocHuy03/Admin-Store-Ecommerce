@@ -9,11 +9,36 @@ import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import axios from "axios";
 import { httpApi } from "../../dev";
 import { useNavigate } from "react-router-dom";
-import { message } from "antd";
+import { Select, Upload, message } from "antd";
+import { Button, Form, Input, InputNumber } from "antd";
+import { fetchAllColors } from "../../utils/api/colorApi";
 
 export default function Add() {
   const navigate = useNavigate();
-  const { data, isLoading } = useQuery(
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [descriptionData, setDescriptionData] = useState("");
+  const [contentData, setContentData] = useState("");
+
+  const [imageFileList, setImageFileList] = useState([]);
+
+  const size = "large";
+
+  const { data: dataColors, isLoading: loadingColor } = useQuery(
+    ["colors"],
+    () => fetchAllColors(),
+    {
+      staleTime: 1000,
+      refetchOnMount: false,
+    }
+  );
+
+  const options =
+    dataColors?.map((color) => ({
+      value: color.nameColor,
+      label: color.nameColor,
+    })) || [];
+
+  const { data: dataCategories, isLoading: loadingCategories } = useQuery(
     ["categories"],
     () => fetchAllCategories(),
     {
@@ -22,26 +47,32 @@ export default function Add() {
     }
   );
 
-  const [isSubmitting, setIsSubmitting] = useState(false); // set loading button
-  const {
-    register,
-    handleSubmit,
-    control,
-    formState: { errors },
-    reset,
-  } = useForm();
+  const onDescriptionChange = (event, editor) => {
+    const data = editor.getData();
+    setDescriptionData(data);
+  };
+  const onContentChange = (event, editor) => {
+    const data = editor.getData();
+    setContentData(data);
+  };
+
+  const handleImageChange = (info) => {
+    setImageFileList(info.fileList);
+  };
 
   const postProductMutation = useMutation((data) => fetchPostProduct(data));
 
-  const onSubmit = async (data) => {
+  const onFinish = async (values) => {
     setIsSubmitting(true);
+    values.descriptionProduct = descriptionData;
+    values.contentProduct = contentData;
 
     try {
       const formData = new FormData();
-      const imageFiles = Array.from(data.imageProducts);
+      const imageFiles = values.imageProducts.fileList;
 
       imageFiles.forEach((file, index) => {
-        formData.append(`file[]`, file);
+        formData.append(`file[]`, file.originFileObj);
       });
 
       const uploadResponse = await axios.post(
@@ -56,10 +87,10 @@ export default function Add() {
       // console.log(uploadResponse.data);
 
       const imageUrls = uploadResponse.data.secure_urls.map((file) => file);
-      data.imageProducts = imageUrls;
+      values.imageProducts = imageUrls;
 
       // Add mode
-      const response = await postProductMutation.mutateAsync(data);
+      const response = await postProductMutation.mutateAsync(values);
       if (response.status === true) {
         message.success(`${response.message}`);
         navigate("/products");
@@ -73,209 +104,176 @@ export default function Add() {
     }
     setIsSubmitting(false);
   };
+
   return (
     <Layout>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <Form
+        layout="vertical"
+        autoComplete="off"
+        onFinish={onFinish}
+        // validateMessages={validateMessages}
+      >
         <div className="grid gap-6 mb-6 md:grid-cols-2">
-          <div>
-            <label
-              htmlFor="nameProduct"
-              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >
-              Name Product
-            </label>
-
-            <input
-              type="text"
-              id="nameProduct"
-              className={`${
-                errors.nameProduct ? "border-red-500" : "border-gray-300"
-              } bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
-              {...register("nameProduct", { required: true })}
-              placeholder="Asus GB5 ..."
-            />
-            {errors.nameProduct && (
-              <p className="text-red-500 text-sm mt-1">
-                * Name Product is required
-              </p>
-            )}
-          </div>
-          <div>
-            <label
-              htmlFor="price_has_ropped"
-              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >
-              Giá Đã Giảm
-            </label>
-            <input
-              type="number"
-              id="price_has_ropped"
-              className={`${
-                errors.price_has_ropped ? "border-red-500" : "border-gray-300"
-              } bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
-              {...register("price_has_ropped", { required: true })}
-              placeholder="1000"
-            />
-            {errors.price_has_ropped && (
-              <p className="text-red-500 text-sm mt-1">
-                * Price Has ropped is required
-              </p>
-            )}
-          </div>
-          <div>
-            <label
-              htmlFor="categoryID"
-              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >
-              Categories
-            </label>
-            <select
-              id="categoryID"
-              className={`${
-                errors.categoryID ? "border-red-500" : "border-gray-300"
-              } bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
-              {...register("categoryID", { required: true })}
-            >
-              <option value="">Vui Lòng Chọn Trạng Thái</option>
-              {data?.map((item, index) => (
-                <option key={index} value={item.id}>
-                  {item.nameCategory}
-                </option>
-              ))}
-            </select>
-            {errors.categoryID && (
-              <p className="text-red-500 text-sm mt-1">
-                * Categories is required
-              </p>
-            )}
-          </div>
-          <div>
-            <label
-              htmlFor="initial_price"
-              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >
-              Giá Ban Đầu
-            </label>
-            <input
-              type="number"
-              id="initial_price"
-              className={`${
-                errors.initial_price ? "border-red-500" : "border-gray-300"
-              } bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
-              {...register("initial_price", { required: true })}
-              placeholder="10000"
-            />
-            {errors.initial_price && (
-              <p className="text-red-500 text-sm mt-1">
-                * Initial price is required
-              </p>
-            )}
-          </div>
-          <div>
-            <label
-              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              htmlFor="default_size"
-            >
-              Image Products
-            </label>
-            <input
-              className={`${
-                errors.imageProducts ? "border-red-500" : "border-gray-300"
-              } bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
-              type="file"
-              id="default_size"
-              multiple
-              {...register("imageProducts", { required: true })}
-            />
-
-            {errors.imageProducts && (
-              <p className="text-red-500 text-sm mt-1">* Images is required</p>
-            )}
-          </div>
-
-          <div>
-            <label
-              htmlFor="statusProduct"
-              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >
-              Status
-            </label>
-
-            <select
-              id="statusProduct"
-              className={`${
-                errors.statusProduct ? "border-red-500" : "border-gray-300"
-              } bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
-              {...register("statusProduct", { required: true })}
-            >
-              <option value="">Vui Lòng Chọn Trạng Thái</option>
-              <option value="stocking">Còn Hàng</option>
-              <option value="out-of-stock">Hết Hàng</option>
-            </select>
-            {errors.statusProduct && (
-              <p className="text-red-500 text-sm mt-1">* Status is required</p>
-            )}
-          </div>
-        </div>
-
-        <div className="mb-6">
-          <label
-            htmlFor="contentProduct"
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          <Form.Item
+            label="Name Product"
+            name="nameProduct"
+            style={{
+              marginBottom: 0,
+            }}
+            rules={[{ required: true, message: "* Name Product is required" }]}
           >
-            Nội Dung
-          </label>
+            <Input size={size} placeholder="Asus GB5 ..." />
+          </Form.Item>
 
-          <textarea
-            id="contentProduct"
-            rows="4"
-            className={`${
-              errors.contentProduct ? "border-red-500" : "border-gray-300"
-            } bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
-            {...register("contentProduct", { required: true })}
-            placeholder="Nội Dung"
-          ></textarea>
+          <Form.Item
+            label="Price Has Ropped"
+            name="price_has_ropped"
+            style={{
+              marginBottom: 0,
+            }}
+            rules={[
+              { required: true, message: "* Price Has ropped is required" },
+            ]}
+          >
+            <Input size={size} placeholder="10000" />
+          </Form.Item>
 
-          {errors.contentProduct && (
-            <p className="text-red-500 text-sm mt-1">
-              * Content Product is required
-            </p>
-          )}
+          <Form.Item
+            label="Initial Price"
+            name="initial_price"
+            style={{
+              marginBottom: 0,
+            }}
+            rules={[{ required: true, message: "* Initial Price is required" }]}
+          >
+            <Input size={size} placeholder="10000" />
+          </Form.Item>
+
+          <Form.Item
+            label="Categories"
+            name="categoryID"
+            style={{
+              marginBottom: 0,
+            }}
+            rules={[{ required: true, message: "* Categories is required" }]}
+          >
+            <Select size={size}>
+              <Select.Option value="">Vui Lòng Chọn Danh Mục</Select.Option>
+              {dataCategories?.map((item, index) => (
+                <Select.Option key={index} value={item.id}>
+                  {item.nameCategory}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            label="Colors"
+            name="nameColors"
+            style={{
+              marginBottom: 0,
+            }}
+            rules={[{ required: true, message: "* Colors is required" }]}
+          >
+            <Select
+              mode="tags"
+              size={size}
+              placeholder="Tags Color"
+              options={options}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Status"
+            name="statusProduct"
+            style={{
+              marginBottom: 0,
+            }}
+            rules={[{ required: true, message: "* Status is required" }]}
+          >
+            <Select size={size}>
+              <Select.Option value="">Vui Lòng Chọn Trạng Thái</Select.Option>
+              <Select.Option value="stocking">Còn Hàng</Select.Option>
+              <Select.Option value="out-of-stock">Hết Hàng</Select.Option>
+            </Select>
+          </Form.Item>
         </div>
 
         <div className="mb-6">
-          <Controller
-            control={control}
-            name="descriptionProduct"
-            rules={{ required: true }}
-            render={({ field }) => (
-              <CKEditor
-                editor={ClassicEditor}
-                data={field.value}
-                onChange={(event, editor) => {
-                  const data = editor.getData();
-                  field.onChange(data);
-                }}
-                onReady={(editor) => {
-                  editor.editing.view.change((writer) => {
-                    writer.setStyle(
-                      "height",
-                      "200px",
-                      editor.editing.view.document.getRoot()
-                    );
-                  });
-                }}
-              />
-            )}
-          />
-          {errors.descriptionProduct && (
-            <p className="text-red-500 text-sm mt-1">
-              * Description is required
-            </p>
-          )}
+          <Form.Item
+            label="Images"
+            name="imageProducts"
+            style={{
+              marginBottom: 0,
+            }}
+            rules={[{ required: true, message: "* Images is required" }]}
+          >
+            <Upload
+              action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+              listType="picture"
+              fileList={imageFileList}
+              onChange={handleImageChange}
+            >
+              <Button size={size}>Upload</Button>
+            </Upload>
+          </Form.Item>
         </div>
 
-        <div className="pb-16">
+        <div className="mb-6">
+          <Form.Item
+            label="Content"
+            name="contentProduct"
+            rules={[
+              {
+                required: true,
+                message: "* Content is required",
+              },
+            ]}
+          >
+            <CKEditor
+              editor={ClassicEditor}
+              onReady={(editor) => {
+                editor.editing.view.change((writer) => {
+                  writer.setStyle(
+                    "height",
+                    "200px",
+                    editor.editing.view.document.getRoot()
+                  );
+                });
+              }}
+              onChange={onContentChange}
+            />
+          </Form.Item>
+        </div>
+
+        <div className="mb-6">
+          <Form.Item
+            label="Description"
+            name="descriptionProduct"
+            rules={[
+              {
+                required: true,
+                message: "* Description is required",
+              },
+            ]}
+          >
+            <CKEditor
+              editor={ClassicEditor}
+              onReady={(editor) => {
+                editor.editing.view.change((writer) => {
+                  writer.setStyle(
+                    "height",
+                    "200px",
+                    editor.editing.view.document.getRoot()
+                  );
+                });
+              }}
+              onChange={onDescriptionChange}
+            />
+          </Form.Item>
+        </div>
+
+        <div className="my-16">
           {isSubmitting ? (
             <button
               disabled
@@ -310,7 +308,7 @@ export default function Add() {
             </button>
           )}
         </div>
-      </form>
+      </Form>
     </Layout>
   );
 }
