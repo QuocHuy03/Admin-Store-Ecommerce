@@ -14,18 +14,20 @@ import {
 import { fetchAllCategories } from "../../utils/api/categoriesApi";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import { getBase64 } from "../../dev";
+import { getBase64, httpApi } from "../../dev";
+import axios from "axios";
 
 export default function Edit() {
   const size = "large";
 
   const { slug } = useParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isImageRequired, setIsImageRequired] = useState(true);
   const [descriptionData, setDescriptionData] = useState("");
   const [contentData, setContentData] = useState("");
-  const [isImageRequired, setIsImageRequired] = useState(true);
   const [fileList, setFileList] = useState([]);
   const [isSlug, setIsSlug] = useState(slug || "");
+  const [isImageUpdateAllowed, setIsImageUpdateAllowed] = useState(false);
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
   useEffect(() => {
@@ -51,17 +53,24 @@ export default function Edit() {
     }
   );
 
+
+  useEffect(() => {
+    if (dataProduct) {
+      setDescriptionData(dataProduct.descriptionProduct);
+      setContentData(dataProduct.contentProduct);
+    }
+  }, [dataProduct]);
+
   useEffect(() => {
     if (dataProduct?.imagePaths) {
       const imagePaths = dataProduct.imagePaths.split(",");
       const fileListData = imagePaths.map((path, index) => ({
-        uid: index,
         url: path,
       }));
-      console.log(fileListData);
       setIsImageRequired(fileListData.length === 0);
       setFileList(fileListData);
     }
+    setIsImageUpdateAllowed(dataProduct);
   }, [dataProduct]);
 
   const nameColors = dataProduct?.nameColors.split(",");
@@ -100,8 +109,9 @@ export default function Edit() {
     nameColors: selectedOptions,
     statusProduct: dataProduct?.statusProduct,
     categoryID: dataProduct?.categoryID,
-    contentProduct: dataProduct?.contentProduct,
-    descriptionProduct: dataProduct?.descriptionProduct,
+    contentProduct: contentData,
+    descriptionProduct: contentData,
+    imageProducts: fileList,
   });
 
   const onDescriptionChange = (event, editor) => {
@@ -129,6 +139,7 @@ export default function Edit() {
     );
 
     setIsImageRequired(false);
+    setIsImageUpdateAllowed(true);
     setFileList(fileList);
   };
 
@@ -147,42 +158,59 @@ export default function Edit() {
     values.descriptionProduct = descriptionData;
     values.contentProduct = contentData;
     values.imageProducts = fileList;
-
-    try {
-      const formData = new FormData();
-      const imageFiles = values.imageProducts;
-
-      imageFiles.forEach((file, index) => {
-        formData.append(`file[]`, file.originFileObj);
-      });
-
-      const uploadResponse = await axios.post(
-        `${httpApi}/api/uploadFile`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+    if (isImageUpdateAllowed) {
+      try {
+        console.log("Không Update Ảnh");
+        const response = await updateProductMutation.mutateAsync(values);
+        if (response.status === true) {
+          message.success(`${response.message}`);
+          navigate("/products");
+        } else {
+          message.error(`${response.message}`);
         }
-      );
-      // console.log(uploadResponse.data);
-
-      const imageUrls = uploadResponse.data.secure_urls.map((file) => file);
-      values.imageProducts = imageUrls;
-
-      // Add mode
-      const response = await updateProductMutation.mutateAsync(data);
-      if (response.status === true) {
-        message.success(`${response.message}`);
-        navigate("/products");
-      } else {
-        message.error(`${response.message}`);
+        reset();
+      } catch (error) {
+        console.error(error);
       }
+    } else {
+      try {
+        console.log("Có Update Ảnh");
+        const formData = new FormData();
+        const imageFiles = values.imageProducts;
 
-      reset();
-    } catch (error) {
-      console.error(error);
+        imageFiles.forEach((file, index) => {
+          formData.append(`file[]`, file.originFileObj);
+        });
+
+        const uploadResponse = await axios.post(
+          `${httpApi}/api/uploadFile`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        // console.log(uploadResponse.data);
+
+        const imageUrls = uploadResponse.data.secure_urls.map((file) => file);
+        values.imageProducts = imageUrls;
+
+        // Add mode
+        const response = await updateProductMutation.mutateAsync(values);
+        if (response.status === true) {
+          message.success(`${response.message}`);
+          navigate("/products");
+        } else {
+          message.error(`${response.message}`);
+        }
+
+        reset();
+      } catch (error) {
+        console.error(error);
+      }
     }
+    queryClient.invalidateQueries("edit-product");
     setIsSubmitting(false);
   };
 
@@ -363,7 +391,8 @@ export default function Edit() {
                 >
                   <CKEditor
                     editor={ClassicEditor}
-                    data={dataProduct.contentProduct}
+                    data={contentData}
+                    initialData={dataProduct?.contentProduct}
                     onReady={(editor) => {
                       editor.editing.view.change((writer) => {
                         writer.setStyle(
@@ -391,7 +420,8 @@ export default function Edit() {
                 >
                   <CKEditor
                     editor={ClassicEditor}
-                    data={dataProduct.descriptionProduct}
+                    data={descriptionData}
+                    initialData={dataProduct?.descriptionProduct}
                     onReady={(editor) => {
                       editor.editing.view.change((writer) => {
                         writer.setStyle(
