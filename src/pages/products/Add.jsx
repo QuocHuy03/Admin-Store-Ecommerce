@@ -7,11 +7,11 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import axios from "axios";
-import { httpApi } from "../../dev";
+import { getBase64, httpApi } from "../../dev";
 import { useNavigate } from "react-router-dom";
-import { Select, Upload, message } from "antd";
+import { List, Select, Upload, message } from "antd";
 import { Button, Form, Input, InputNumber } from "antd";
-import { fetchAllColors } from "../../utils/api/colorApi";
+import { DeleteOutlined } from "@ant-design/icons";
 
 export default function Add() {
   const navigate = useNavigate();
@@ -19,23 +19,29 @@ export default function Add() {
   const [descriptionData, setDescriptionData] = useState("");
   const [contentData, setContentData] = useState("");
 
-  const [imageFileList, setImageFileList] = useState([]);
+  const [fileList, setFileList] = useState([]);
 
   const size = "large";
 
-  const { data: dataColors, isLoading: loadingColor } = useQuery(
-    ["colors"],
-    () => fetchAllColors(),
+  const dataColors = [
     {
-      staleTime: 1000,
-      refetchOnMount: false,
-    }
-  );
+      id: 1,
+      name: "black",
+    },
+    {
+      id: 2,
+      name: "red",
+    },
+    {
+      id: 3,
+      name: "yellow",
+    },
+  ];
 
   const options =
     dataColors?.map((color) => ({
-      value: color.nameColor,
-      label: color.nameColor,
+      value: color.name,
+      label: color.name,
     })) || [];
 
   const { data: dataCategories, isLoading: loadingCategories } = useQuery(
@@ -56,20 +62,42 @@ export default function Add() {
     setContentData(data);
   };
 
-  const handleImageChange = (info) => {
-    setImageFileList(info.fileList);
+  const handleImageChange = async (info) => {
+    let fileList = [...info.fileList];
+
+    fileList = await Promise.all(
+      fileList.map(async (file) => {
+        if (file.response) {
+          file.url = file.response.url;
+        }
+        if (!file.url && !file.preview) {
+          file.preview = await getBase64(file.originFileObj);
+        }
+        return file;
+      })
+    );
+
+    setFileList(fileList);
+  };
+
+  const handleRemove = (file) => {
+    const newFileList = fileList.filter((item) => item.uid !== file.uid);
+    setFileList(newFileList);
   };
 
   const postProductMutation = useMutation((data) => fetchPostProduct(data));
 
   const onFinish = async (values) => {
+    console.log(values);
+
     setIsSubmitting(true);
     values.descriptionProduct = descriptionData;
     values.contentProduct = contentData;
+    values.imageProducts = fileList;
 
     try {
       const formData = new FormData();
-      const imageFiles = values.imageProducts.fileList;
+      const imageFiles = values.imageProducts;
 
       imageFiles.forEach((file, index) => {
         formData.append(`file[]`, file.originFileObj);
@@ -206,16 +234,43 @@ export default function Add() {
             style={{
               marginBottom: 0,
             }}
-            rules={[{ required: true, message: "* Images is required" }]}
+            rules={[
+              {
+                required: fileList.length === 0,
+                message: "* Images is required",
+              },
+            ]}
           >
             <Upload
-              action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
               listType="picture"
-              fileList={imageFileList}
+              fileList={fileList}
               onChange={handleImageChange}
+              onRemove={handleRemove}
+              accept=".jpg,.png"
+              multiple
             >
-              <Button size={size}>Upload</Button>
+              {fileList.length >= 8 ? null : (
+                <Button size={size}>Upload</Button>
+              )}
             </Upload>
+            <List
+              className="mt-3"
+              grid={{ gutter: 8, column: 4 }}
+              dataSource={fileList}
+              renderItem={(item) => (
+                <List.Item
+                  actions={[
+                    <Button
+                      icon={<DeleteOutlined />}
+                      size="small"
+                      onClick={() => handleRemove(item)}
+                    />,
+                  ]}
+                >
+                  <img src={item.url || item.preview} alt="" />
+                </List.Item>
+              )}
+            />
           </Form.Item>
         </div>
 
