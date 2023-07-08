@@ -52,7 +52,7 @@ export default function Edit() {
       staleTime: 500,
     }
   );
-
+  console.log(isImageUpdateAllowed);
 
   useEffect(() => {
     if (dataProduct) {
@@ -70,7 +70,7 @@ export default function Edit() {
       setIsImageRequired(fileListData.length === 0);
       setFileList(fileListData);
     }
-    setIsImageUpdateAllowed(dataProduct);
+    setIsImageUpdateAllowed(true);
   }, [dataProduct]);
 
   const nameColors = dataProduct?.nameColors.split(",");
@@ -139,7 +139,7 @@ export default function Edit() {
     );
 
     setIsImageRequired(false);
-    setIsImageUpdateAllowed(true);
+    setIsImageUpdateAllowed(false);
     setFileList(fileList);
   };
 
