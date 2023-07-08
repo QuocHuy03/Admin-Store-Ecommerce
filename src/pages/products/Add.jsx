@@ -229,16 +229,11 @@ export default function Add() {
 
         <div className="mb-6">
           <Form.Item
-            label={`Images ${isImageRequired}`}
+            label={`Images`}
             name="imageProducts"
             style={{
               marginBottom: 0,
             }}
-            // rules={
-            //   isImageRequired
-            //     ? [{ required: true, message: "* Images is required" }]
-            //     : undefined
-            // }
           >
             <Upload
               listType="picture"
