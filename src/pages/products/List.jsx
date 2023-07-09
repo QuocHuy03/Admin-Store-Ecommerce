@@ -63,17 +63,17 @@ export default function List() {
       name: "PRICE INITIAL",
       selector: (row) => row.initial_price,
       sortable: true,
-      cell: (row) => <span>{row.initial_price.toLocaleString()} VND</span>,
+      cell: (row) => (
+        <span style={{ textDecoration: "line-through" }}>
+          {row.initial_price.toLocaleString()} VND
+        </span>
+      ),
     },
     {
       name: "PRICE ROPED",
       selector: (row) => row.price_has_ropped,
       sortable: true,
-      cell: (row) => (
-        <span style={{ textDecoration: "line-through" }}>
-          {row.price_has_ropped.toLocaleString()} VND
-        </span>
-      ),
+      cell: (row) => <span>{row.price_has_ropped.toLocaleString()} VND</span>,
     },
     {
       name: "STATUS",

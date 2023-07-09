@@ -349,7 +349,7 @@ export default function Add() {
                   fill="currentColor"
                 />
               </svg>
-              Update
+              Save
             </button>
           ) : (
             <button
