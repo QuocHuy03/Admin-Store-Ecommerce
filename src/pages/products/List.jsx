@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import { Button } from "antd";
 import { message } from "antd";
 import ModalMessage from "../../components/ModalMessage";
+import ColorsCell from "../../components/ColorsCell";
 
 export default function List() {
   const queryClient = useQueryClient();
@@ -27,20 +28,7 @@ export default function List() {
       staleTime: 1000,
     }
   );
-  const ColorCell = ({ values }) => {
-    return (
-      <div className="flex">
-        {values.map((color, index) => (
-          <span
-            key={index}
-            className="inline-block bg-blue-500 text-white text-xs py-1 px-2 rounded-full mr-1"
-          >
-            {color}
-          </span>
-        ))}
-      </div>
-    );
-  };
+
   const huydev = [
     {
       name: "STT",
@@ -72,7 +60,7 @@ export default function List() {
       name: "COLORS",
       selector: (row) => row.nameColors.split(","),
       sortable: true,
-      cell: (row) => <ColorCell values={row.nameColors.split(",")} />,
+      cell: (row) => <ColorsCell values={row.nameColors.split(",")} />,
     },
     {
       name: "PRICE INITIAL",
