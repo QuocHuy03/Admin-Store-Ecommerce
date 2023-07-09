@@ -6,7 +6,6 @@ import DataTable from "react-data-table-component";
 import { AppContext } from "../../context/AppContextProvider";
 import { useForm } from "react-hook-form";
 import ModalForm from "../../components/ModalForm";
-import ModalMessage from "../../components/ModalMessage";
 import { Button, message } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import Loading from "../../components/Loading";

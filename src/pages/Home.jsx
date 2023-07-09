@@ -1,15 +1,30 @@
 import React from "react";
 import Layout from "../libs/Layout";
+import { useQueries } from "@tanstack/react-query";
+import { fetchAllProducts } from "../utils/api/productsApi";
+import { fetchAllCategories } from "../utils/api/categoriesApi";
+import { fetchAllUsers } from "../utils/api/userApi";
+import Loading from "../components/Loading";
 
 export default function Home() {
+  const results = useQueries({
+    queries: [
+      { queryKey: ["products", 1], queryFn: fetchAllProducts },
+      { queryKey: ["categories", 2], queryFn: fetchAllCategories },
+      { queryKey: ["users", 3], queryFn: fetchAllUsers },
+    ],
+  });
+
+  const isLoading = results.some((result) => result.isLoading);
+
   return (
     <Layout>
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-7">
         <div className="bg-lightblue-100 rounded-2xl p-6 border">
-          <p className="text-sm font-semibold text-black mb-2">Views</p>
+          <p className="text-sm font-semibold text-black mb-2">Products</p>
           <div className="flex items-center justify-between">
             <h2 className="text-2xl leading-9 font-semibold text-black">
-              721K
+              {isLoading ? <Loading /> : results[0].data?.length}
             </h2>
             <div className="flex items-center gap-1">
               <p className="text-xs leading-[18px] text-black">+11.01%</p>
@@ -31,10 +46,10 @@ export default function Home() {
           </div>
         </div>
         <div className="bg-lightpurple-100 rounded-2xl p-6 border">
-          <p className="text-sm font-semibold text-black mb-2">Visits</p>
+          <p className="text-sm font-semibold text-black mb-2">Orders</p>
           <div className="flex items-center justify-between">
             <h2 className="text-2xl leading-9 font-semibold text-black">
-              367K
+              {isLoading ? <Loading /> : results[0].data?.length}
             </h2>
             <div className="flex items-center gap-1">
               <p className="text-xs leading-[18px] text-black">+9.15%</p>
@@ -56,10 +71,10 @@ export default function Home() {
           </div>
         </div>
         <div className="bg-lightblue-100 rounded-2xl p-6 border">
-          <p className="text-sm font-semibold text-black mb-2">New Users</p>
+          <p className="text-sm font-semibold text-black mb-2">Categories</p>
           <div className="flex items-center justify-between">
             <h2 className="text-2xl leading-9 font-semibold text-black">
-              1,156
+              {isLoading ? <Loading /> : results[1].data?.length}
             </h2>
             <div className="flex items-center gap-1">
               <p className="text-xs leading-[18px] text-black">-0.56%</p>
@@ -85,7 +100,7 @@ export default function Home() {
           <p className="text-sm font-semibold text-black mb-2">Active Users</p>
           <div className="flex items-center justify-between">
             <h2 className="text-2xl leading-9 font-semibold text-black">
-              239K
+              {isLoading ? <Loading /> : results[2].data?.length}
             </h2>
             <div className="flex items-center gap-1">
               <p className="text-xs leading-[18px] text-black">-1.48%</p>
