@@ -12,6 +12,7 @@ import { Button } from "antd";
 import { message } from "antd";
 import ModalMessage from "../../components/ModalMessage";
 import ColorsCell from "../../components/ColorsCell";
+import Loading from "../../components/Loading";
 
 export default function List() {
   const queryClient = useQueryClient();
@@ -21,13 +22,9 @@ export default function List() {
   const [productName, setProductName] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
 
-  const { data, isLoading, refetch } = useQuery(
-    ["products"],
-    () => fetchAllProducts(),
-    {
-      staleTime: 1000,
-    }
-  );
+  const { data, isLoading } = useQuery(["products"], () => fetchAllProducts(), {
+    staleTime: 1000,
+  });
 
   const huydev = [
     {
@@ -256,15 +253,19 @@ export default function List() {
         {productName ? "product" : "products"} "
         {productName ? productName : selectedRows.length}" ?
       </ModalMessage>
-      <DataTable
-        columns={huydev}
-        data={filteredData}
-        dense={false}
-        responsive={true}
-        pagination
-        selectableRows
-        onSelectedRowsChange={handleRowSelected}
-      />
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <DataTable
+          columns={huydev}
+          data={filteredData}
+          dense={false}
+          responsive={true}
+          pagination
+          selectableRows
+          onSelectedRowsChange={handleRowSelected}
+        />
+      )}
     </Layout>
   );
 }
