@@ -27,7 +27,20 @@ export default function List() {
       staleTime: 1000,
     }
   );
-
+  const ColorCell = ({ values }) => {
+    return (
+      <div className="flex">
+        {values.map((color, index) => (
+          <span
+            key={index}
+            className="inline-block bg-blue-500 text-white text-xs py-1 px-2 rounded-full mr-1"
+          >
+            {color}
+          </span>
+        ))}
+      </div>
+    );
+  };
   const huydev = [
     {
       name: "STT",
@@ -43,7 +56,7 @@ export default function List() {
       name: "IMAGE",
       cell: (row) => (
         <img
-        src={row.imagePaths ? row.imagePaths.split(",")[0] : null}
+          src={row.imagePaths ? row.imagePaths.split(",")[0] : null}
           alt="Product Image"
           style={{ width: "50px", height: "50px" }}
         />
@@ -56,6 +69,12 @@ export default function List() {
       sortable: true,
     },
     {
+      name: "COLORS",
+      selector: (row) => row.nameColors.split(","),
+      sortable: true,
+      cell: (row) => <ColorCell values={row.nameColors.split(",")} />,
+    },
+    {
       name: "PRICE INITIAL",
       selector: (row) => row.initial_price,
       sortable: true,
@@ -65,7 +84,11 @@ export default function List() {
       name: "PRICE ROPED",
       selector: (row) => row.price_has_ropped,
       sortable: true,
-      cell: (row) => <span>{row.price_has_ropped.toLocaleString()} VND</span>,
+      cell: (row) => (
+        <span style={{ textDecoration: "line-through" }}>
+          {row.price_has_ropped.toLocaleString()} VND
+        </span>
+      ),
     },
     {
       name: "STATUS",
@@ -111,7 +134,6 @@ export default function List() {
   // modal message
 
   const showModal = (item) => {
-    console.log(item);
     if (item !== null && item !== undefined) {
       setDataIdToDelete(item.id);
       setProductName(item.nameProduct);
