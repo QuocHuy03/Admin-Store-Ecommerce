@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Layout from "../../libs/Layout";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Loading from "../../components/Loading";
 import { Form, message } from "antd";
 import { List, Select, Upload } from "antd";
@@ -19,7 +19,7 @@ import axios from "axios";
 
 export default function Edit() {
   const size = "large";
-
+  const navigate = useNavigate();
   const { slug } = useParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isImageRequired, setIsImageRequired] = useState(true);
@@ -168,7 +168,6 @@ export default function Edit() {
         } else {
           message.error(`${response.message}`);
         }
-        reset();
       } catch (error) {
         console.error(error);
       }
@@ -204,8 +203,6 @@ export default function Edit() {
         } else {
           message.error(`${response.message}`);
         }
-
-        reset();
       } catch (error) {
         console.error(error);
       }

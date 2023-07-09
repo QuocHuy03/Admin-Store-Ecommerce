@@ -58,7 +58,6 @@ export const fetchPostProduct = async (data) => {
 };
 
 export const fetchUpdateProduct = async (slug, isEdit, data) => {
-  console.log(isEdit);
   try {
     const state = store.getState();
     const accessToken = state.auth.user.accessToken;
