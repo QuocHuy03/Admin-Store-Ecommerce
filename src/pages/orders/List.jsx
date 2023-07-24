@@ -1,9 +1,9 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Layout from "../../libs/Layout";
 import DataTable from "react-data-table-component";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAllOrders } from "../../utils/api/ordersApi";
+import {Link} from "react-router-dom"
 
 export default function List() {
   const [searchText, setSearchText] = useState("");
@@ -18,71 +18,46 @@ export default function List() {
       sortable: true,
     },
     {
-      name: "NAME",
-      selector: (row) => row.nameProduct,
+      name: "CODE",
+      selector: (row) => row.code,
       sortable: true,
     },
     {
-      name: "IMAGE",
-      cell: (row) => (
-        <img
-          src={row.imagePaths.split(",")[0]}
-          alt="Product Image"
-          style={{ width: "50px", height: "50px" }}
-        />
-      ),
+      name: "TOTAL PRICE",
+      cell: (row) => <span>{row.totalPrice.toLocaleString()} VND</span>,
       sortable: true,
     },
     {
-      name: "CATEGORY",
-      selector: (row) => row.nameCategory,
+      name: "PAYMENT METHOD",
+      cell: (row) => <span className="uppercase">{row.paymentMethod}</span>,
       sortable: true,
-    },
-    {
-      name: "PRICE INITIAL",
-      selector: (row) => row.initial_price,
-      sortable: true,
-      cell: (row) => <span>{row.initial_price.toLocaleString()} VND</span>,
-    },
-    {
-      name: "PRICE ROPED",
-      selector: (row) => row.price_has_ropped,
-      sortable: true,
-      cell: (row) => <span>{row.price_has_ropped.toLocaleString()} VND</span>,
     },
     {
       name: "STATUS",
-      selector: (row) => row.statusProduct,
+      selector: (row) => row.status,
       sortable: true,
       cell: (row) => (
         <div
           className={`${
-            row.statusProduct === "stocking"
+            row.status === "Đã Thanh Toán"
               ? "px-2 py-1 inline-flex items-center rounded text-xs font-bold justify-center bg-green-500 text-white"
               : "px-2 py-1 inline-flex items-center rounded text-xs font-bold justify-center bg-red-500 text-white"
           }`}
         >
-          {row.statusProduct === "stocking" ? "Còn Hàng" : "Hết Hàng"}
+          {row.status}
         </div>
       ),
     },
     {
-      name: "ACTIONS",
+      name: "ACTION",
       cell: (row) => (
         <div>
           <Link
-            to={`/product/edit/${row.slugProduct}`}
+            to={`/order-detail/${row.code}`}
             className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
           >
-            Edit
-          </Link>{" "}
-          /{" "}
-          <button
-            onClick={() => showModal(row)}
-            className="font-medium text-red-600 dark:text-blue-500 hover:underline"
-          >
-            Delete
-          </button>
+            Chi Tiết
+          </Link>
         </div>
       ),
       ignoreRowClick: true,
@@ -98,6 +73,8 @@ export default function List() {
         huyit.nameProduct.toLowerCase().includes(searchText.toLowerCase())
       )
     : data;
+
+  console.log(data);
 
   return (
     <Layout>
