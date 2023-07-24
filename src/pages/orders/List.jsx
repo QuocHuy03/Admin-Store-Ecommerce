@@ -3,7 +3,7 @@ import Layout from "../../libs/Layout";
 import DataTable from "react-data-table-component";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAllOrders } from "../../utils/api/ordersApi";
-import {Link} from "react-router-dom"
+import { Link } from "react-router-dom";
 
 export default function List() {
   const [searchText, setSearchText] = useState("");
@@ -73,8 +73,6 @@ export default function List() {
         huyit.nameProduct.toLowerCase().includes(searchText.toLowerCase())
       )
     : data;
-
-  console.log(data);
 
   return (
     <Layout>
