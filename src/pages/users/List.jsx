@@ -54,7 +54,7 @@ export default function List() {
     },
 
     {
-      name: "ACTIONS",
+      name: "ACTION",
       cell: (row) => (
         <div>
           <button

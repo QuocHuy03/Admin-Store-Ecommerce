@@ -5,6 +5,7 @@ import { fetchAllProducts } from "../utils/api/productsApi";
 import { fetchAllCategories } from "../utils/api/categoriesApi";
 import { fetchAllUsers } from "../utils/api/userApi";
 import Loading from "../components/Loading";
+import { fetchAllOrders } from "../utils/api/ordersApi";
 
 export default function Home() {
   const results = useQueries({
@@ -12,6 +13,7 @@ export default function Home() {
       { queryKey: ["products", 1], queryFn: fetchAllProducts },
       { queryKey: ["categories", 2], queryFn: fetchAllCategories },
       { queryKey: ["users", 3], queryFn: fetchAllUsers },
+      { queryKey: ["orders", 4], queryFn: fetchAllOrders },
     ],
   });
 
@@ -49,7 +51,7 @@ export default function Home() {
           <p className="text-sm font-semibold text-black mb-2">Orders</p>
           <div className="flex items-center justify-between">
             <h2 className="text-2xl leading-9 font-semibold text-black">
-              {isLoading ? <Loading /> : results[0].data?.length}
+              {isLoading ? <Loading /> : results[3].data?.length}
             </h2>
             <div className="flex items-center gap-1">
               <p className="text-xs leading-[18px] text-black">+9.15%</p>
