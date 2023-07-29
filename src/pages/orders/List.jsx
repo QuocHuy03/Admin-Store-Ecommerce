@@ -166,7 +166,7 @@ export default function List() {
         footer={[
           <Button key="cancel" onClick={closeModal}>
             Cancel
-          </Button>,
+          </Button>
         ]}
       >
         <Table
