@@ -12,12 +12,14 @@ export default function Login() {
 
   return (
     <div className="min-h-[calc(100vh-134px)] py-4 px-4 sm:px-12 flex justify-center items-center ">
+      
       <Form
         name="normal_login"
         className="login-form"
         initialValues={{ remember: true }}
         onFinish={onFinish}
       >
+        <h1 className="text-xl font-medium pb-5 text-center">Login Admin</h1>
         <Form.Item
           name="username"
           rules={[{ required: true, message: "Please input your Username!" }]}
@@ -48,10 +50,6 @@ export default function Login() {
           <Form.Item name="remember" valuePropName="checked" noStyle>
             <Checkbox>Remember me</Checkbox>
           </Form.Item>
-
-          <a className="login-form-forgot" href="">
-            Forgot password
-          </a>
         </Form.Item>
 
         <Form.Item>
@@ -61,8 +59,7 @@ export default function Login() {
             className="login-form-button bg-red-600"
           >
             Log in
-          </Button>{" "}
-          Or <a href="">register now!</a>
+          </Button>
         </Form.Item>
       </Form>
     </div>

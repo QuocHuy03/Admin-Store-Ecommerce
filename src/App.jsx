@@ -7,7 +7,6 @@ import ListProduct from "./pages/products/List";
 import ListOrder from "./pages/orders/List";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/auth/Login";
-import Register from "./pages/auth/Register";
 import AddProduct from "./pages/products/Add";
 import EditProduct from "./pages/products/Edit";
 import ListUser from "./pages/users/List";
@@ -45,7 +44,6 @@ function App() {
         ) : (
           <>
             <Route path="/auth" element={<Login />} />
-            <Route path="/auth/register" element={<Register />} />
           </>
         )}
       </Routes>
