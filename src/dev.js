@@ -1,4 +1,4 @@
-export const httpApi = "http://localhost:8080";
+export const httpApi = "https://server-store-ecommerce.onrender.com";
 export const SECRET_KEY = "LeQuocHuy";
 
 export const getBase64 = (file) => {
