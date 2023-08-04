@@ -112,7 +112,6 @@ export default function List() {
     }
     setIsModalDelete(true);
   };
-  
 
   const handleOk = () => {
     if (selectedRows && selectedRows.length > 0) {
@@ -450,7 +449,9 @@ export default function List() {
           {categoryName ? categoryName : selectedRows.length}" ?
         </ModalMessage>
         {isLoading ? (
-          <Loading />
+          <div className="flex justify-center pt-2">
+            <Loading />
+          </div>
         ) : (
           <DataTable
             columns={huydev}

@@ -2,8 +2,6 @@ import React from "react";
 import { Modal } from "antd";
 
 export default function ModalForm({
-  closeIcon,
-  maskClosable,
   title,
   isOpenModal,
   children,
@@ -20,8 +18,6 @@ export default function ModalForm({
   return (
     <Modal
       title={title}
-      closeIcon={closeIcon}
-      maskClosable={maskClosable}
       open={isOpenModal}
       onOk={hideModal}
       onCancel={hideModal}

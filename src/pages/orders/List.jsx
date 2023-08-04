@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import { AppContext } from "../../context/AppContextProvider";
 import ModalForm from "../../components/ModalForm";
 import { Button, Table } from "antd";
+import Loading from "../../components/Loading";
 
 export default function List() {
   const { isOpenModal, setIsOpenModal } = useContext(AppContext);
@@ -150,20 +151,24 @@ export default function List() {
     : data;
   return (
     <Layout>
-      <DataTable
-        columns={huydev}
-        data={filteredData}
-        dense={false}
-        responsive={true}
-        pagination
-      />
+      {isLoading ? (
+        <div className="flex justify-center pt-2">
+          <Loading />
+        </div>
+      ) : (
+        <DataTable
+          columns={huydev}
+          data={filteredData}
+          dense={false}
+          responsive={true}
+          pagination
+        />
+      )}
 
       <ModalForm
         title={"List Product"}
         isOpenModal={isOpenModal}
         onClose={closeModal}
-        closeIcon={closeModal}
-        maskClosable={maskClosable}
         footer={[
           <Button key="cancel" onClick={closeModal}>
             Cancel

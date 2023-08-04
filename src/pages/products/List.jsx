@@ -254,7 +254,9 @@ export default function List() {
         {productName ? productName : selectedRows.length}" ?
       </ModalMessage>
       {isLoading ? (
-        <Loading />
+        <div className="flex justify-center pt-2">
+          <Loading />
+        </div>
       ) : (
         <DataTable
           columns={huydev}

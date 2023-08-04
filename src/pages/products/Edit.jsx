@@ -233,7 +233,9 @@ export default function Edit() {
           onFinish={onFinish}
         >
           {loadingProduct ? (
-            <Loading />
+            <div className="flex justify-center pt-2">
+              <Loading />
+            </div>
           ) : (
             <>
               <div className="grid gap-6 mb-6 md:grid-cols-2">

@@ -200,7 +200,9 @@ export default function List() {
         </ModalForm>
 
         {isLoading ? (
-          <Loading />
+          <div className="flex justify-center pt-2">
+            <Loading />
+          </div>
         ) : (
           <DataTable
             columns={huydev}
