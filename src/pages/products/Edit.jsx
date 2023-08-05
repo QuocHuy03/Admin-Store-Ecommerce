@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Layout from "../../libs/Layout";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Loading from "../../components/Loading";
 import { Form, message } from "antd";
@@ -14,7 +14,7 @@ import {
 import { fetchAllCategories } from "../../utils/api/categoriesApi";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import { getBase64, httpApi } from "../../dev";
+import { dataColors, getBase64, httpApi } from "../../dev";
 import axios from "axios";
 
 export default function Edit() {
@@ -74,25 +74,6 @@ export default function Edit() {
   }, [dataProduct]);
 
   const nameColors = dataProduct?.nameColors.split(",");
-
-  const dataColors = [
-    {
-      id: 1,
-      name: "black",
-    },
-    {
-      id: 2,
-      name: "red",
-    },
-    {
-      id: 3,
-      name: "yellow",
-    },
-    {
-      id: 4,
-      name: "white",
-    },
-  ];
 
   const options = dataColors.map((color) => ({
     value: color.name,
@@ -164,7 +145,7 @@ export default function Edit() {
     values.imageProducts = fileList;
     if (isImageUpdateAllowed) {
       try {
-        console.log("Không Update Ảnh");
+        // console.log("Không Update Ảnh");
         const response = await updateProductMutation.mutateAsync(values);
         if (response.status === true) {
           message.success(`${response.message}`);
@@ -177,7 +158,7 @@ export default function Edit() {
       }
     } else {
       try {
-        console.log("Có Update Ảnh");
+        // console.log("Có Update Ảnh");
         const formData = new FormData();
         const imageFiles = values.imageProducts;
 
@@ -211,7 +192,7 @@ export default function Edit() {
         console.error(error);
       }
     }
-    queryClient.invalidateQueries("edit-product");
+    queryClient.invalidateQueries(["edit-product", isSlug]);
     setIsSubmitting(false);
   };
 
@@ -400,7 +381,7 @@ export default function Edit() {
                       editor.editing.view.change((writer) => {
                         writer.setStyle(
                           "height",
-                          "200px",
+                          "400px",
                           editor.editing.view.document.getRoot()
                         );
                       });
@@ -429,7 +410,7 @@ export default function Edit() {
                       editor.editing.view.change((writer) => {
                         writer.setStyle(
                           "height",
-                          "200px",
+                          "500px",
                           editor.editing.view.document.getRoot()
                         );
                       });

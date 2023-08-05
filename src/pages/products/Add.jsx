@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import Layout from "../../libs/Layout";
-import { Controller, useForm } from "react-hook-form";
 import { fetchPostProduct } from "../../utils/api/productsApi";
 import { fetchAllCategories } from "../../utils/api/categoriesApi";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import axios from "axios";
-import { getBase64, httpApi } from "../../dev";
+import { dataColors, getBase64, httpApi } from "../../dev";
 import { useNavigate } from "react-router-dom";
 import { List, Select, Upload, message } from "antd";
 import { Button, Form, Input, InputNumber } from "antd";
@@ -22,25 +21,6 @@ export default function Add() {
   const [fileList, setFileList] = useState([]);
 
   const size = "large";
-
-  const dataColors = [
-    {
-      id: 1,
-      name: "black",
-    },
-    {
-      id: 2,
-      name: "red",
-    },
-    {
-      id: 3,
-      name: "yellow",
-    },
-    {
-      id: 4,
-      name: "white",
-    },
-  ];
 
   const options =
     dataColors?.map((color) => ({
@@ -108,7 +88,7 @@ export default function Add() {
       });
 
       const uploadResponse = await axios.post(
-        `${httpApi}/api/uploadFile`,
+        `${httpApi}/api/uploadFile/much`,
         formData,
         {
           headers: {
@@ -189,7 +169,7 @@ export default function Add() {
             }}
             rules={[{ required: true, message: "* Categories is required" }]}
           >
-            <Select size={size}>
+            <Select size={size} placeholder="Macbook">
               <Select.Option value="">Vui Lòng Chọn Danh Mục</Select.Option>
               {dataCategories?.map((item, index) => (
                 <Select.Option key={index} value={item.id}>
@@ -223,7 +203,7 @@ export default function Add() {
             }}
             rules={[{ required: true, message: "* Status is required" }]}
           >
-            <Select size={size}>
+            <Select size={size} placeholder="Chọn Trạng Thái">
               <Select.Option value="">Vui Lòng Chọn Trạng Thái</Select.Option>
               <Select.Option value="stocking">Còn Hàng</Select.Option>
               <Select.Option value="out-of-stock">Hết Hàng</Select.Option>
@@ -292,7 +272,7 @@ export default function Add() {
                 editor.editing.view.change((writer) => {
                   writer.setStyle(
                     "height",
-                    "200px",
+                    "400px",
                     editor.editing.view.document.getRoot()
                   );
                 });
@@ -319,7 +299,7 @@ export default function Add() {
                 editor.editing.view.change((writer) => {
                   writer.setStyle(
                     "height",
-                    "200px",
+                    "500px",
                     editor.editing.view.document.getRoot()
                   );
                 });

@@ -43,7 +43,7 @@ export default function List() {
         <img
           src={row.imagePaths ? row.imagePaths.split(",")[0] : null}
           alt="Product Image"
-          style={{ width: "50px", height: "50px" }}
+          style={{ height: "50px" }}
         />
       ),
       sortable: true,

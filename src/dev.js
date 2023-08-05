@@ -9,3 +9,22 @@ export const getBase64 = (file) => {
     reader.onerror = (error) => reject(error);
   });
 };
+
+export const dataColors = [
+  {
+    id: 1,
+    name: "black",
+  },
+  {
+    id: 2,
+    name: "red",
+  },
+  {
+    id: 3,
+    name: "yellow",
+  },
+  {
+    id: 4,
+    name: "white",
+  },
+];

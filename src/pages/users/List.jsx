@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { fetchAllUsers, fetchUpdateUser } from "../../utils/api/userApi";
 import Layout from "../../libs/Layout";
 import DataTable from "react-data-table-component";
@@ -13,7 +13,7 @@ import Loading from "../../components/Loading";
 export default function List() {
   const { isOpenModal, setIsOpenModal } = useContext(AppContext);
   const queryClient = useQueryClient();
-  const [isSubmitting, setIsSubmitting] = useState(false); // set loading button
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [userData, setUserData] = useState(null);
 

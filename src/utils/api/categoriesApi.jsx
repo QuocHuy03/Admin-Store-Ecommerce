@@ -58,12 +58,15 @@ export const fetchPostCategory = async (data) => {
   }
 };
 
-export const fetchUpdateCategory = async (slug, data) => {
+export const fetchUpdateCategory = async (slug, isEdit, data) => {
   try {
     const state = store.getState();
     const accessToken = state.auth.user.accessToken;
     http.setAccessToken(accessToken);
-    const response = await http.update(`/updateCategory/${slug}`, data);
+    const response = await http.update(
+      `/updateCategory/${slug}?isEdit=${isEdit}`,
+      data
+    );
     return response;
   } catch (error) {
     console.error(error);
