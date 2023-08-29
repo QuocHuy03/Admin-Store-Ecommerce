@@ -61,14 +61,16 @@ export default function Add() {
       })
     );
 
-    setIsImageRequired(false);
+   setIsImageRequired(!(fileList.length > 0));
     setFileList(fileList);
   };
 
   const handleRemove = (file) => {
     const newFileList = fileList.filter((item) => item.uid !== file.uid);
     setFileList(newFileList);
-    setIsImageRequired(true);
+     if (newFileList.length === 0) {
+      setIsImageRequired(true);
+    }
   };
 
   const validateFileList = () => {
