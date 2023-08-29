@@ -123,7 +123,7 @@ export default function Edit() {
       })
     );
 
-    setIsImageRequired(false);
+     setIsImageRequired(!(fileList.length > 0));
     setIsImageUpdateAllowed(false);
     setFileList(fileList);
   };
@@ -131,7 +131,9 @@ export default function Edit() {
   const handleRemove = (file) => {
     const newFileList = fileList.filter((item) => item.uid !== file.uid);
     setFileList(newFileList);
-    setIsImageRequired(newFileList.length === 0);
+      if (newFileList.length === 0) {
+      setIsImageRequired(true);
+    }
   };
 
   const updateProductMutation = useMutation((data) =>
@@ -366,11 +368,17 @@ export default function Edit() {
                 <Form.Item
                   label="Content"
                   name="contentProduct"
-                  rules={[
-                    {
-                      required: true,
-                      message: "* Content is required",
-                    },
+                   rules={[
+                    ({ getFieldValue }) => ({
+                      validator(_, value) {
+                        if (!contentData) {
+                          return Promise.reject(
+                            new Error("* Content is required")
+                          );
+                        }
+                        return Promise.resolve();
+                      },
+                    }),
                   ]}
                 >
                   <CKEditor
@@ -396,10 +404,16 @@ export default function Edit() {
                   label="Description"
                   name="descriptionProduct"
                   rules={[
-                    {
-                      required: true,
-                      message: "* Description is required",
-                    },
+                    ({ getFieldValue }) => ({
+                      validator(_, value) {
+                        if (!descriptionData) {
+                          return Promise.reject(
+                            new Error("* Description is required")
+                          );
+                        }
+                        return Promise.resolve();
+                      },
+                    }),
                   ]}
                 >
                   <CKEditor
