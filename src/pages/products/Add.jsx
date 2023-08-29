@@ -71,6 +71,13 @@ export default function Add() {
     setIsImageRequired(true);
   };
 
+  const validateFileList = () => {
+    if (!fileList || fileList.length === 0) {
+      return setIsImageRequired(true);
+    }
+    return Promise.resolve();
+  };
+
   const postProductMutation = useMutation((data) => fetchPostProduct(data));
 
   const onFinish = async (values) => {
@@ -218,6 +225,11 @@ export default function Add() {
             style={{
               marginBottom: 0,
             }}
+                 rules={[
+              {
+                validator: validateFileList,
+              },
+            ]}
           >
             <Upload
               listType="picture"
@@ -260,10 +272,14 @@ export default function Add() {
             label="Content"
             name="contentProduct"
             rules={[
-              {
-                required: true,
-                message: "* Content is required",
-              },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!contentData) {
+                    return Promise.reject(new Error("* Content is required"));
+                  }
+                  return Promise.resolve();
+                },
+              }),
             ]}
           >
             <CKEditor
@@ -287,10 +303,14 @@ export default function Add() {
             label="Description"
             name="descriptionProduct"
             rules={[
-              {
-                required: true,
-                message: "* Description is required",
-              },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!descriptionData) {
+                    return Promise.reject(new Error("* Description is required"));
+                  }
+                  return Promise.resolve();
+                },
+              }),
             ]}
           >
             <CKEditor
