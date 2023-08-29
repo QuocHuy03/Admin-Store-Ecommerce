@@ -17,7 +17,7 @@ export default function Add() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [descriptionData, setDescriptionData] = useState("");
   const [contentData, setContentData] = useState("");
-  const [isImageRequired, setIsImageRequired] = useState(true);
+  const [isImageRequired, setIsImageRequired] = useState();
   const [fileList, setFileList] = useState([]);
 
   const size = "large";
